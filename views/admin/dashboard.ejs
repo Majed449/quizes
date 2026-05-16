@@ -1,0 +1,127 @@
+<%- include('partials/layout-top', { activePage: 'dashboard' }) %>
+
+<!-- STATS CARDS -->
+<div class="stats-row">
+  <div class="stat-card" style="--c:#00d4aa">
+    <div class="stat-card-icon">🎯</div>
+    <div class="stat-card-info">
+      <div class="stat-card-num"><%= stats.totalQuizzes %></div>
+      <div class="stat-card-label">اختبار</div>
+    </div>
+  </div>
+  <div class="stat-card" style="--c:#ff6b6b">
+    <div class="stat-card-icon">📚</div>
+    <div class="stat-card-info">
+      <div class="stat-card-num"><%= stats.totalReviews %></div>
+      <div class="stat-card-label">مراجعة</div>
+    </div>
+  </div>
+  <div class="stat-card" style="--c:#a78bfa">
+    <div class="stat-card-icon">❓</div>
+    <div class="stat-card-info">
+      <div class="stat-card-num"><%= stats.totalQuestions %></div>
+      <div class="stat-card-label">سؤال اختبار</div>
+    </div>
+  </div>
+  <div class="stat-card" style="--c:#fbbf24">
+    <div class="stat-card-icon">✍️</div>
+    <div class="stat-card-info">
+      <div class="stat-card-num"><%= stats.totalEssays %></div>
+      <div class="stat-card-label">سؤال مقالي</div>
+    </div>
+  </div>
+</div>
+
+<!-- QUICK ACTIONS -->
+<div class="section-card">
+  <div class="section-card-header">
+    <h2>⚡ إجراءات سريعة</h2>
+  </div>
+  <div class="quick-actions">
+    <a href="/admin/quizzes/new" class="quick-action-btn qa-green">
+      <span class="qa-icon">➕</span>
+      <div>
+        <div class="qa-title">اختبار جديد</div>
+        <div class="qa-sub">أضف اختبار صح/خطأ أو اختيار متعدد</div>
+      </div>
+    </a>
+    <a href="/admin/reviews/new" class="quick-action-btn qa-purple">
+      <span class="qa-icon">📝</span>
+      <div>
+        <div class="qa-title">مراجعة جديدة</div>
+        <div class="qa-sub">أضف موضوع مراجعة مع أسئلة مقالية</div>
+      </div>
+    </a>
+    <a href="/" target="_blank" class="quick-action-btn qa-blue">
+      <span class="qa-icon">🌐</span>
+      <div>
+        <div class="qa-title">عرض الموقع</div>
+        <div class="qa-sub">افتح الموقع في نافذة جديدة</div>
+      </div>
+    </a>
+    <a href="/admin/settings" class="quick-action-btn qa-gray">
+      <span class="qa-icon">⚙️</span>
+      <div>
+        <div class="qa-title">الإعدادات</div>
+        <div class="qa-sub">تغيير كلمة المرور وإعدادات الحساب</div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<!-- TWO COLUMN: Quizzes + Reviews latest -->
+<div class="two-col">
+  <div class="section-card">
+    <div class="section-card-header">
+      <h2>🎯 آخر الاختبارات</h2>
+      <a href="/admin/quizzes" class="btn-sm">عرض الكل</a>
+    </div>
+    <% if (quizzes.length === 0) { %>
+    <div class="empty-state-sm">لا توجد اختبارات بعد</div>
+    <% } else { %>
+    <div class="mini-list">
+      <% quizzes.slice(-5).reverse().forEach(quiz => { %>
+      <div class="mini-item">
+        <span class="mini-icon"><%= quiz.icon %></span>
+        <div class="mini-info">
+          <div class="mini-title"><%= quiz.title %></div>
+          <div class="mini-meta"><%= quiz.questions.length %> سؤال</div>
+        </div>
+        <div class="mini-actions">
+          <a href="/admin/quizzes/<%= quiz.id %>/edit" class="icon-btn">✏️</a>
+          <a href="/quiz/<%= quiz.id %>" target="_blank" class="icon-btn">👁️</a>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+    <% } %>
+  </div>
+
+  <div class="section-card">
+    <div class="section-card-header">
+      <h2>📚 آخر المراجعات</h2>
+      <a href="/admin/reviews" class="btn-sm">عرض الكل</a>
+    </div>
+    <% if (reviews.length === 0) { %>
+    <div class="empty-state-sm">لا توجد مراجعات بعد</div>
+    <% } else { %>
+    <div class="mini-list">
+      <% reviews.slice(-5).reverse().forEach(review => { %>
+      <div class="mini-item">
+        <span class="mini-icon"><%= review.icon %></span>
+        <div class="mini-info">
+          <div class="mini-title"><%= review.title %></div>
+          <div class="mini-meta"><%= review.subject %> · <%= review.sections.length %> أقسام</div>
+        </div>
+        <div class="mini-actions">
+          <a href="/admin/reviews/<%= review.id %>/edit" class="icon-btn">✏️</a>
+          <a href="/review/<%= review.id %>" target="_blank" class="icon-btn">👁️</a>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('partials/layout-bottom') %>

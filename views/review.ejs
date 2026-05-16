@@ -1,0 +1,105 @@
+<%- include('partials/header', { pageStyle: 'review' }) %>
+
+  <main class="review-main">
+    <div class="review-wrapper">
+      <!-- Review Header -->
+      <div class="review-page-header" style="--card-color: <%= topic.color %>">
+        <a href="/review" class="back-btn">← العودة</a>
+        <div class="review-header-content">
+          <span class="review-header-icon">
+            <%= topic.icon %>
+          </span>
+          <div>
+            <span class="review-subject-tag">
+              <%= topic.subject %>
+            </span>
+            <h1>
+              <%= topic.title %>
+            </h1>
+            <p>
+              <%= topic.description %>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table of Contents -->
+      <div class="toc-panel">
+        <h3 class="toc-title">📋 محتويات المراجعة</h3>
+        <ul class="toc-list">
+          <% topic.sections.forEach((section, idx)=> { %>
+            <li>
+              <a href="#section-<%= idx %>" class="toc-link">
+                <span class="toc-num">
+                  <%= idx + 1 %>
+                </span>
+                <span>
+                  <%= section.title %>
+                </span>
+              </a>
+            </li>
+            <% }) %>
+        </ul>
+      </div>
+
+      <!-- Sections -->
+      <% topic.sections.forEach((section, sIdx)=> { %>
+        <div class="review-section" id="section-<%= sIdx %>">
+          <div class="section-header-bar" style="border-color: var(--card-color)">
+            <h2 class="section-heading">
+              <span class="section-num">
+                <%= sIdx + 1 %>
+              </span>
+              <%= section.title %>
+            </h2>
+          </div>
+
+          <!-- Content -->
+          <div class="content-box">
+            <div class="content-label">📝 ملخص الموضوع</div>
+            <p class="content-text">
+              <%- section.content.replace(/\n/g, '<br>' ) %>
+            </p>
+          </div>
+
+          <!-- Essay Questions -->
+          <% section.questions.forEach((q, qIdx)=> { %>
+            <div class="essay-question-card" id="<%= q.id %>">
+              <div class="essay-q-header">
+                <div class="essay-q-num">س<%= qIdx + 1 %>
+                </div>
+                <span class="essay-badge">سؤال مقالي</span>
+              </div>
+              <p class="essay-q-text">
+                <%= q.question %>
+              </p>
+
+              <!-- Student answer area -->
+              <div class="student-answer-area">
+                <label class="answer-label">✍️ اكتب إجابتك هنا (للتدريب):</label>
+                <textarea class="student-textarea" placeholder="اكتب إجابتك هنا..."></textarea>
+                <button class="reveal-btn" onclick="toggleAnswer('<%= q.id %>')">
+                  <span class="reveal-icon">👁️</span>
+                  عرض نموذج الإجابة
+                </button>
+              </div>
+
+              <!-- Model Answer (hidden by default) -->
+              <div class="model-answer" id="answer-<%= q.id %>">
+                <div class="model-label">نموذج الإجابة</div>
+                <div class="model-text"><%- q.answer.replace(/\n/g, '<br>' ) %></div>
+              </div>
+            </div>
+            <% }) %>
+        </div>
+        <% }) %>
+
+          <!-- Navigation -->
+          <div class="review-footer-nav">
+            <a href="/review" class="btn btn-outline">← العودة للمراجعات</a>
+            <a href="/quiz" class="btn btn-primary">جرّب اختباراً 🎯</a>
+          </div>
+    </div>
+  </main>
+
+  <%- include('partials/footer', { pageScript: 'review' }) %>

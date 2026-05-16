@@ -1,0 +1,510 @@
+<%- include('partials/layout-top', { activePage: 'quizzes' }) %>
+
+<div class="page-actions-bar">
+  <div>
+    <h2 class="page-bar-title">🎯 الاختبارات (<span id="quizCount"><%= quizzes.length %></span>)</h2>
+    <div class="search-filter-wrap" style="margin-top:0.75rem">
+      <input type="text" id="searchInput" class="form-input" placeholder="🔍 ابحث عن اختبار..." style="max-width:300px">
+      <select id="filterType" class="form-input" style="max-width:150px">
+        <option value="">كل الأنواع</option>
+        <option value="tf">صح/خطأ فقط</option>
+        <option value="mc">اختيار متعدد فقط</option>
+      </select>
+    </div>
+  </div>
+  <div style="display:flex;gap:0.5rem">
+    <button class="btn btn-secondary" onclick="openImportCSV()">📥 استيراد من CSV</button>
+    <a href="/admin/quizzes/new" class="btn btn-primary">➕ إضافة اختبار</a>
+  </div>
+</div>
+
+<% if (quizzes.length === 0) { %>
+<div class="empty-state">
+  <div class="empty-icon">🎯</div>
+  <h3>لا توجد اختبارات بعد</h3>
+  <p>ابدأ بإضافة اختبارك الأول</p>
+  <a href="/admin/quizzes/new" class="btn btn-primary" style="margin-top:1rem">إضافة اختبار</a>
+</div>
+<% } else { %>
+<div class="data-table-wrap">
+  <table class="data-table" id="quizzesTable">
+    <thead>
+      <tr>
+        <th>الاختبار</th>
+        <th>الأسئلة</th>
+        <th>صح/خطأ</th>
+        <th>اختيار متعدد</th>
+        <th>اللون</th>
+        <th>الإجراءات</th>
+      </tr>
+    </thead>
+    <tbody id="quizzesTableBody">
+      <% quizzes.forEach(quiz => { %>
+      <% const tfCount = quiz.questions.filter(q => q.type === 'truefalse').length %>
+      <% const mcCount = quiz.questions.filter(q => q.type === 'multiple').length %>
+      <tr class="quiz-row" data-quiz-id="<%= quiz.id %>" data-quiz-title="<%= quiz.title %>" data-has-tf="<%= tfCount > 0 %>" data-has-mc="<%= mcCount > 0 %>">
+        <td>
+          <div class="table-title-cell">
+            <span class="table-icon"><%= quiz.icon %></span>
+            <div>
+              <div class="table-name"><%= quiz.title %></div>
+              <div class="table-sub"><%= quiz.description %></div>
+            </div>
+          </div>
+        </td>
+        <td><span class="badge badge-neutral"><%= quiz.questions.length %></span></td>
+        <td><span class="badge badge-green"><%= tfCount %></span></td>
+        <td><span class="badge badge-red"><%= mcCount %></span></td>
+        <td>
+          <div class="color-dot-wrap">
+            <span class="color-dot" style="background:<%= quiz.color %>"></span>
+            <%= quiz.color %>
+          </div>
+        </td>
+        <td>
+          <div class="action-btns">
+            <a href="/quiz/<%= quiz.id %>" target="_blank" class="action-btn action-view" title="عرض">👁️</a>
+            <a href="/admin/quizzes/<%= quiz.id %>/edit" class="action-btn action-edit" title="تعديل">✏️</a>
+            <form action="/admin/quizzes/<%= quiz.id %>/clone" method="POST" style="display:inline">
+              <button type="submit" class="action-btn action-clone" title="نسخ">📋</button>
+            </form>
+            <form action="/admin/quizzes/<%= quiz.id %>/delete" method="POST" style="display:inline" onsubmit="return confirmDelete('هل أنت متأكد من حذف هذا الاختبار؟')">
+              <button type="submit" class="action-btn action-delete" title="حذف">🗑️</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<% } %>
+
+<!-- CSV IMPORT PANEL OVERLAY -->
+<div id="csvOverlay" class="csv-overlay" onclick="closeImportCSV()"></div>
+
+<!-- CSV IMPORT SIDE PANEL -->
+<div id="csvPanel" class="csv-panel">
+
+  <!-- Panel Header -->
+  <div class="csv-panel-header">
+    <div class="csv-header-title">
+      <span class="csv-header-icon">📥</span>
+      <div>
+        <h3>استيراد من CSV</h3>
+        <p>أضف أسئلتك بصيغة نصية سريعة</p>
+      </div>
+    </div>
+    <button class="csv-close-btn" onclick="closeImportCSV()">✕</button>
+  </div>
+
+  <!-- Panel Body: Guide + Form -->
+  <div class="csv-panel-body">
+
+    <!-- Format Guide Card -->
+    <div class="csv-guide-card">
+      <div class="csv-guide-title">📋 صيغة الإدخال</div>
+
+      <div class="csv-format-block">
+        <div class="csv-format-label">✓ صح / خطأ</div>
+        <code class="csv-code">نوع | السؤال | صح أو خطأ | شرح</code>
+        <div class="csv-example">
+          <span class="ex-type">صح/خطأ</span><span class="ex-sep">|</span><span class="ex-q">الأرض كروية الشكل</span><span class="ex-sep">|</span><span class="ex-ans">صح</span><span class="ex-sep">|</span><span class="ex-exp">لأن...</span>
+        </div>
+      </div>
+
+      <div class="csv-format-block">
+        <div class="csv-format-label">🎯 اختيار متعدد</div>
+        <code class="csv-code">نوع | السؤال | خيار1..4 | رقم الإجابة | شرح</code>
+        <div class="csv-example">
+          <span class="ex-type">اختيار</span><span class="ex-sep">|</span><span class="ex-q">عاصمة مصر</span><span class="ex-sep">|</span><span class="ex-opt">القاهرة</span><span class="ex-sep">|</span><span class="ex-opt">الإسكندرية</span><span class="ex-sep">|</span><span class="ex-opt">أسوان</span><span class="ex-sep">|</span><span class="ex-opt">الغردقة</span><span class="ex-sep">|</span><span class="ex-ans">1</span>
+        </div>
+      </div>
+
+      <div class="csv-tips">
+        <div class="csv-tip">💡 الفاصل هو رمز الـ <strong>|</strong> بين كل حقل</div>
+        <div class="csv-tip">💡 الشرح والأيقونة واللون كلها اختيارية</div>
+        <div class="csv-tip">💡 يمكنك إضافة تعليق بوضع <strong>#</strong> في بداية السطر</div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <div class="csv-form">
+
+      <div class="form-group">
+        <label class="form-label">عنوان الاختبار <span class="req">*</span></label>
+        <input type="text" id="csvTitle" class="form-input" placeholder="مثال: اختبار الفيزياء - الفصل الأول">
+      </div>
+
+      <div class="form-group" style="flex:1;display:flex;flex-direction:column;">
+        <div class="csv-textarea-header">
+          <label class="form-label">بيانات الأسئلة <span class="req">*</span></label>
+          <span class="csv-line-count" id="csvLineCount">0 سطر</span>
+        </div>
+        <textarea id="csvData" class="form-textarea csv-textarea" rows="12"
+          placeholder="اكتب أسئلتك هنا، سطر لكل سؤال:
+
+صح/خطأ|الشمس نجم|صح|الشمس هي النجم الأقرب للأرض
+اختيار|كم كوكباً في المجموعة الشمسية|6|7|8|9|3"></textarea>
+      </div>
+
+      <div class="csv-meta-row">
+        <div class="form-group" style="flex:1">
+          <label class="form-label">الأيقونة</label>
+          <input type="text" id="csvIcon" class="form-input" placeholder="📝" value="📝" maxlength="4" style="text-align:center;font-size:1.3rem">
+        </div>
+        <div class="form-group" style="flex:1">
+          <label class="form-label">اللون</label>
+          <div class="color-input-wrap">
+            <input type="color" id="csvColor" value="#00d4aa" class="color-picker">
+            <input type="text" id="csvColorText" class="form-input" value="#00d4aa" placeholder="#00d4aa" style="flex:1">
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Panel Footer -->
+  <div class="csv-panel-footer">
+    <div id="csvStatus" class="csv-status"></div>
+    <div class="csv-footer-btns">
+      <button class="btn btn-outline" onclick="closeImportCSV()">إلغاء</button>
+      <button class="btn btn-primary" id="csvImportBtn" onclick="importCSV()">
+        <span id="csvBtnText">✅ استيراد الأسئلة</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CSV Panel open/close ──
+function openImportCSV() {
+  document.getElementById('csvOverlay').classList.add('active');
+  document.getElementById('csvPanel').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeImportCSV() {
+  document.getElementById('csvOverlay').classList.remove('active');
+  document.getElementById('csvPanel').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// Live line counter
+document.getElementById('csvData').addEventListener('input', function () {
+  const lines = this.value.split('\n').filter(l => l.trim() && !l.trim().startsWith('#'));
+  document.getElementById('csvLineCount').textContent = lines.length + ' سطر';
+});
+
+// Color sync
+document.getElementById('csvColor').addEventListener('input', function () {
+  document.getElementById('csvColorText').value = this.value;
+});
+document.getElementById('csvColorText').addEventListener('input', function () {
+  if (/^#[0-9a-fA-F]{6}$/.test(this.value)) {
+    document.getElementById('csvColor').value = this.value;
+  }
+});
+
+// ── Import ──
+async function importCSV() {
+  const title   = document.getElementById('csvTitle').value.trim();
+  const csvData = document.getElementById('csvData').value.trim();
+  const icon    = document.getElementById('csvIcon').value || '📝';
+  const color   = document.getElementById('csvColor').value;
+  const statusEl = document.getElementById('csvStatus');
+  const btnText  = document.getElementById('csvBtnText');
+
+  statusEl.className = 'csv-status';
+  statusEl.textContent = '';
+
+  if (!title) {
+    statusEl.className = 'csv-status error';
+    statusEl.textContent = '⚠️ الرجاء إدخال عنوان الاختبار';
+    document.getElementById('csvTitle').focus();
+    return;
+  }
+  if (!csvData) {
+    statusEl.className = 'csv-status error';
+    statusEl.textContent = '⚠️ الرجاء إدخال بيانات الأسئلة';
+    return;
+  }
+
+  btnText.textContent = '⏳ جاري الاستيراد...';
+  document.getElementById('csvImportBtn').disabled = true;
+
+  try {
+    const res = await fetch('/admin/quizzes/import-csv', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ csvData, title, icon, color })
+    });
+
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error);
+
+    statusEl.className = 'csv-status success';
+    statusEl.textContent = `✅ تم استيراد ${result.count} سؤال بنجاح!`;
+    setTimeout(() => { closeImportCSV(); location.reload(); }, 1200);
+  } catch (err) {
+    statusEl.className = 'csv-status error';
+    statusEl.textContent = '❌ ' + err.message;
+    btnText.textContent = '✅ استيراد الأسئلة';
+    document.getElementById('csvImportBtn').disabled = false;
+  }
+}
+
+// Search & Filter
+document.getElementById('searchInput').addEventListener('input', filterQuizzes);
+document.getElementById('filterType').addEventListener('change', filterQuizzes);
+
+function filterQuizzes() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const filter = document.getElementById('filterType').value;
+  const rows = document.querySelectorAll('.quiz-row');
+  let visible = 0;
+
+  rows.forEach(row => {
+    const title = row.dataset.quizTitle.toLowerCase();
+    const hasTF = row.dataset.hasTf === 'true';
+    const hasMC = row.dataset.hasMc === 'true';
+
+    let match = title.includes(search);
+    if (filter === 'tf') match = match && hasTF;
+    else if (filter === 'mc') match = match && hasMC;
+
+    row.style.display = match ? '' : 'none';
+    if (match) visible++;
+  });
+
+  document.getElementById('quizCount').textContent = visible;
+}
+</script>
+
+<style>
+/* ── Overlay ── */
+.csv-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0);
+  z-index: 900;
+  pointer-events: none;
+  transition: background 0.35s ease;
+}
+.csv-overlay.active {
+  background: rgba(0,0,0,0.55);
+  pointer-events: all;
+  backdrop-filter: blur(4px);
+}
+
+/* ── Side Panel ── */
+.csv-panel {
+  position: fixed;
+  top: 0; left: 0;
+  width: min(560px, 98vw);
+  height: 100vh;
+  background: #0d1228;
+  border-right: 1px solid #1c2a45;
+  z-index: 901;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-100%);
+  transition: transform 0.38s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: 4px 0 40px rgba(0,0,0,0.6);
+  overflow: hidden;
+}
+.csv-panel.active {
+  transform: translateX(0);
+}
+
+/* Header */
+.csv-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 1.75rem;
+  border-bottom: 1px solid #1c2a45;
+  background: rgba(0,212,170,0.04);
+  flex-shrink: 0;
+}
+.csv-header-title {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+.csv-header-icon {
+  font-size: 2rem;
+  filter: drop-shadow(0 4px 12px rgba(0,212,170,0.3));
+}
+.csv-header-title h3 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #eef2fc;
+  margin: 0 0 0.15rem;
+}
+.csv-header-title p {
+  font-size: 0.82rem;
+  color: #8a9bbf;
+  margin: 0;
+}
+.csv-close-btn {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid #1c2a45;
+  color: #8a9bbf;
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.csv-close-btn:hover { background: rgba(255,107,107,0.12); color: #ff6b6b; border-color: rgba(255,107,107,0.3); }
+
+/* Body */
+.csv-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Format Guide */
+.csv-guide-card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid #1c2a45;
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.csv-guide-title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #4a5a7a;
+}
+.csv-format-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.csv-format-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #8a9bbf;
+}
+.csv-code {
+  display: block;
+  font-family: 'Courier New', monospace;
+  font-size: 0.78rem;
+  background: rgba(0,212,170,0.07);
+  border: 1px solid rgba(0,212,170,0.18);
+  border-radius: 6px;
+  padding: 0.45rem 0.75rem;
+  color: #00d4aa;
+  direction: ltr;
+  text-align: left;
+}
+.csv-example {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  font-size: 0.77rem;
+  direction: ltr;
+  align-items: center;
+  padding: 0.35rem 0.5rem;
+  background: rgba(255,255,255,0.02);
+  border-radius: 6px;
+  border: 1px solid #1c2a45;
+  line-height: 1.6;
+}
+.ex-type  { color: #a78bfa; font-weight: 700; }
+.ex-sep   { color: #4a5a7a; padding: 0 2px; }
+.ex-q     { color: #eef2fc; }
+.ex-ans   { color: #00d4aa; font-weight: 700; }
+.ex-opt   { color: #8a9bbf; }
+.ex-exp   { color: #5a6b8a; font-style: italic; }
+
+.csv-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  border-top: 1px solid #1c2a45;
+  padding-top: 0.85rem;
+}
+.csv-tip {
+  font-size: 0.8rem;
+  color: #5a6b8a;
+}
+.csv-tip strong { color: #8a9bbf; }
+
+/* Form */
+.csv-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
+}
+.req { color: #ff6b6b; }
+
+.csv-textarea-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+}
+.csv-line-count {
+  font-size: 0.75rem;
+  color: #4a5a7a;
+  font-weight: 600;
+  background: rgba(255,255,255,0.04);
+  padding: 0.2rem 0.6rem;
+  border-radius: 100px;
+  border: 1px solid #1c2a45;
+  transition: all 0.2s;
+}
+.csv-textarea {
+  flex: 1;
+  font-family: 'Courier New', monospace !important;
+  font-size: 0.82rem !important;
+  direction: ltr;
+  text-align: left;
+  line-height: 1.7 !important;
+  resize: none;
+}
+
+.csv-meta-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+/* Footer */
+.csv-panel-footer {
+  padding: 1.25rem 1.75rem;
+  border-top: 1px solid #1c2a45;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-shrink: 0;
+  background: rgba(0,0,0,0.2);
+}
+.csv-footer-btns {
+  display: flex;
+  gap: 0.75rem;
+}
+.csv-status {
+  font-size: 0.85rem;
+  font-weight: 600;
+  flex: 1;
+}
+.csv-status.error   { color: #ff6b6b; }
+.csv-status.success { color: #00d4aa; }
+</style>
+

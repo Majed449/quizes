@@ -1,0 +1,34 @@
+<%- include('partials/header', { pageStyle: 'index' }) %>
+
+<main>
+  <section class="page-hero">
+    <div class="page-hero-content">
+      <h1>📚 المراجعة</h1>
+      <p>مراجعة شاملة مع أسئلة مقالية ونماذج إجابة — استعد للاختبار بثقة</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-container">
+      <div class="cards-grid">
+        <% reviewTopics.forEach(topic => { %>
+        <a href="/review/<%= topic.id %>" class="review-card" style="--card-color: <%= topic.color %>">
+          <div class="review-card-accent"></div>
+          <div class="review-icon"><%= topic.icon %></div>
+          <span class="review-subject"><%= topic.subject %></span>
+          <h3 class="review-title"><%= topic.title %></h3>
+          <p class="review-desc"><%= topic.description %></p>
+          <div class="review-sections">
+            <span class="sections-count"><%= topic.sections.length %> أقسام</span>
+            <span class="questions-count">
+              <%= topic.sections.reduce((acc, s) => acc + s.questions.length, 0) %> أسئلة مقالية
+            </span>
+          </div>
+        </a>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

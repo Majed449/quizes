@@ -1,0 +1,59 @@
+<%- include('partials/layout-top', { activePage: 'reviews' }) %>
+
+<div class="page-actions-bar">
+  <h2 class="page-bar-title">📚 المراجعات (<%= reviews.length %>)</h2>
+  <a href="/admin/reviews/new" class="btn btn-primary">➕ إضافة مراجعة</a>
+</div>
+
+<% if (reviews.length === 0) { %>
+<div class="empty-state">
+  <div class="empty-icon">📚</div>
+  <h3>لا توجد مراجعات بعد</h3>
+  <p>ابدأ بإضافة مراجعتك الأولى</p>
+  <a href="/admin/reviews/new" class="btn btn-primary" style="margin-top:1rem">إضافة مراجعة</a>
+</div>
+<% } else { %>
+<div class="data-table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>المراجعة</th>
+        <th>المادة</th>
+        <th>الأقسام</th>
+        <th>الأسئلة المقالية</th>
+        <th>الإجراءات</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% reviews.forEach(review => { %>
+      <% const essayCount = review.sections.reduce((a, s) => a + s.questions.length, 0) %>
+      <tr>
+        <td>
+          <div class="table-title-cell">
+            <span class="table-icon"><%= review.icon %></span>
+            <div>
+              <div class="table-name"><%= review.title %></div>
+              <div class="table-sub"><%= review.description %></div>
+            </div>
+          </div>
+        </td>
+        <td><span class="badge badge-purple"><%= review.subject %></span></td>
+        <td><span class="badge badge-neutral"><%= review.sections.length %></span></td>
+        <td><span class="badge badge-yellow"><%= essayCount %></span></td>
+        <td>
+          <div class="action-btns">
+            <a href="/review/<%= review.id %>" target="_blank" class="action-btn action-view" title="عرض">👁️</a>
+            <a href="/admin/reviews/<%= review.id %>/edit" class="action-btn action-edit" title="تعديل">✏️</a>
+            <form action="/admin/reviews/<%= review.id %>/delete" method="POST" onsubmit="return confirmDelete('هل أنت متأكد من حذف هذه المراجعة؟')">
+              <button type="submit" class="action-btn action-delete" title="حذف">🗑️</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<% } %>
+
+<%- include('partials/layout-bottom') %>

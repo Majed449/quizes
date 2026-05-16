@@ -1,0 +1,152 @@
+<%- include('partials/header', { pageStyle: 'index' }) %>
+
+<main>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-bg">
+      <div class="hero-orb orb-1"></div>
+      <div class="hero-orb orb-2"></div>
+      <div class="hero-orb orb-3"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-badge">🚀 ابدأ رحلتك التعليمية مع علمني شكراً</div>
+      <h1 class="hero-title">
+        اختبر نفسك
+        <span class="hero-highlight">يومكم مغفلق</span>
+      </h1>
+      <p class="hero-desc">منصة تفاعلية تجمع الاختبارات والمراجعة في مكان واحد — صح وخطأ، اختيار من متعدد، وأسئلة مقالية شاملة</p>
+      <div class="hero-actions">
+        <a href="/quiz" class="btn btn-primary">ابدأ الاختبار الآن</a>
+        <a href="/review" class="btn btn-outline">تصفح المراجعة</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-card floating">
+        <div class="hcard-icon">📝</div>
+        <div class="hcard-text">صح وخطأ</div>
+      </div>
+      <div class="hero-card floating-delay-1">
+        <div class="hcard-icon">🎯</div>
+        <div class="hcard-text">اختيار متعدد</div>
+      </div>
+      <div class="hero-card floating-delay-2">
+        <div class="hcard-icon">📚</div>
+        <div class="hcard-text">أسئلة مقالية</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Bar -->
+  <section class="stats-bar">
+    <div class="stats-container">
+      <div class="stat-item">
+        <span class="stat-num"><%= totalQuizzes %></span>
+        <span class="stat-label">اختبار متاح</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-num"><%= totalQuestions %>+</span>
+        <span class="stat-label">سؤال متنوع</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-num"><%= totalReviews %></span>
+        <span class="stat-label">موضوع مراجعة</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quizzes Section -->
+  <section class="section">
+    <div class="section-container">
+      <div class="section-header">
+        <div class="section-tag">اختبر نفسك</div>
+        <h2 class="section-title">الاختبارات المتاحة</h2>
+        <p class="section-sub">اختر من بين اختبارات متنوعة في مواد مختلفة</p>
+      </div>
+      <div class="cards-grid">
+        <% quizzes.forEach(quiz => { %>
+        <a href="/quiz/<%= quiz.id %>" class="quiz-card" style="--card-color: <%= quiz.color %>">
+          <div class="quiz-card-top">
+            <span class="quiz-icon"><%= quiz.icon %></span>
+            <span class="quiz-badge"><%= quiz.questions.length %> سؤال</span>
+          </div>
+          <h3 class="quiz-title"><%= quiz.title %></h3>
+          <p class="quiz-desc"><%= quiz.description %></p>
+          <div class="quiz-meta">
+            <span class="quiz-types">
+              <span class="type-dot" style="background:#00d4aa"></span> صح/خطأ
+              <span class="type-dot" style="background:#ff6b6b"></span> اختيار متعدد
+            </span>
+            <span class="quiz-arrow">←</span>
+          </div>
+        </a>
+        <% }) %>
+      </div>
+      <div class="section-cta">
+        <a href="/quiz" class="btn btn-ghost">عرض جميع الاختبارات</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Review Section -->
+  <section class="section section-alt">
+    <div class="section-container">
+      <div class="section-header">
+        <div class="section-tag">راجع وتعلّم</div>
+        <h2 class="section-title">موضوعات المراجعة</h2>
+        <p class="section-sub">مراجعة شاملة مع أسئلة مقالية مفصّلة ونماذج إجابة</p>
+      </div>
+      <div class="cards-grid">
+        <% reviewTopics.forEach(topic => { %>
+        <a href="/review/<%= topic.id %>" class="review-card" style="--card-color: <%= topic.color %>">
+          <div class="review-card-accent"></div>
+          <div class="review-icon"><%= topic.icon %></div>
+          <span class="review-subject"><%= topic.subject %></span>
+          <h3 class="review-title"><%= topic.title %></h3>
+          <p class="review-desc"><%= topic.description %></p>
+          <div class="review-sections">
+            <span class="sections-count"><%= topic.sections.length %> أقسام</span>
+            <span class="questions-count">
+              <%= topic.sections.reduce((acc, s) => acc + s.questions.length, 0) %> أسئلة مقالية
+            </span>
+          </div>
+        </a>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="section">
+    <div class="section-container">
+      <div class="section-header">
+        <h2 class="section-title">كيف تعمل المنصة؟</h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">١</div>
+          <div class="step-icon">📌</div>
+          <h3>اختر موضوعك</h3>
+          <p>اختر من بين الاختبارات أو موضوعات المراجعة المتاحة</p>
+        </div>
+        <div class="step-arrow">←</div>
+        <div class="step-card">
+          <div class="step-num">٢</div>
+          <div class="step-icon">✍️</div>
+          <h3>أجب على الأسئلة</h3>
+          <p>أسئلة صح/خطأ واختيار من متعدد بواجهة سهلة وسلسة</p>
+        </div>
+        <div class="step-arrow">←</div>
+        <div class="step-card">
+          <div class="step-num">٣</div>
+          <div class="step-icon">🏆</div>
+          <h3>اعرف نتيجتك</h3>
+          <p>احصل على نتيجتك الفورية مع شرح تفصيلي لكل إجابة</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

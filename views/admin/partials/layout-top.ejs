@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | لوحة التحكم</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+
+<div class="admin-layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-logo-icon">🎓</span>
+      <div>
+        <div class="sidebar-title">منصة التعلم</div>
+        <div class="sidebar-sub">لوحة التحكم</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">القائمة الرئيسية</div>
+      <a href="/admin" class="sidebar-link <%= locals.activePage === 'dashboard' ? 'active' : '' %>">
+        <span class="sl-icon">📊</span> لوحة المعلومات
+      </a>
+      <a href="/admin/quizzes" class="sidebar-link <%= locals.activePage === 'quizzes' ? 'active' : '' %>">
+        <span class="sl-icon">🎯</span> الاختبارات
+      </a>
+      <a href="/admin/reviews" class="sidebar-link <%= locals.activePage === 'reviews' ? 'active' : '' %>">
+        <span class="sl-icon">📚</span> المراجعات
+      </a>
+      <div class="nav-section-label" style="margin-top:1rem">الإعدادات</div>
+      <a href="/admin/settings" class="sidebar-link <%= locals.activePage === 'settings' ? 'active' : '' %>">
+        <span class="sl-icon">⚙️</span> الإعدادات
+      </a>
+      <a href="/" class="sidebar-link" target="_blank">
+        <span class="sl-icon">🌐</span> عرض الموقع
+      </a>
+      <a href="/admin/logout" class="sidebar-link sidebar-logout">
+        <span class="sl-icon">🚪</span> تسجيل الخروج
+      </a>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="admin-main">
+    <header class="admin-topbar">
+      <button class="topbar-toggle" onclick="toggleSidebar()">☰</button>
+      <div class="topbar-title"><%= title %></div>
+      <div class="topbar-user">
+        <span class="user-dot"></span>
+        مسؤول النظام
+      </div>
+    </header>
+
+    <div class="admin-content">

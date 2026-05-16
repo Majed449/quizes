@@ -1,0 +1,136 @@
+<%- include('partials/header', { pageStyle: 'quiz' }) %>
+
+<main class="quiz-main">
+  <div class="quiz-wrapper">
+    <!-- Quiz Header -->
+    <div class="quiz-header" style="--card-color: <%= quiz.color %>">
+      <a href="/quiz" class="back-btn">← العودة</a>
+      <div class="quiz-header-info">
+        <span class="quiz-header-icon"><%= quiz.icon %></span>
+        <div>
+          <h1 class="quiz-page-title"><%= quiz.title %></h1>
+          <p class="quiz-page-desc"><%= quiz.description %></p>
+        </div>
+      </div>
+      <div class="quiz-progress-bar">
+        <div class="quiz-progress-fill" id="progressFill" style="width: 0%"></div>
+      </div>
+      <div class="quiz-progress-info">
+        <span id="progressText">السؤال 1 من <%= quiz.questions.length %></span>
+        <span id="progressPercent">0%</span>
+      </div>
+    </div>
+
+    <!-- Questions Container -->
+    <div class="questions-container" id="questionsContainer">
+      <% quiz.questions.forEach((q, index) => { %>
+      <div class="question-slide <%= index === 0 ? 'active' : '' %>" data-index="<%= index %>">
+        <div class="question-number">السؤال <%= index + 1 %></div>
+        <div class="question-type-badge <%= q.type === 'truefalse' ? 'badge-tf' : 'badge-mc' %>">
+          <%= q.type === 'truefalse' ? '✓ صح أم خطأ' : '🎯 اختيار من متعدد' %>
+        </div>
+        <h2 class="question-text"><%= q.question %></h2>
+
+        <% if (q.type === 'truefalse') { %>
+        <div class="options-grid tf-grid">
+          <button class="option-btn tf-btn" data-value="true" data-index="<%= index %>">
+            <span class="option-icon">✓</span>
+            <span>صح</span>
+          </button>
+          <button class="option-btn tf-btn" data-value="false" data-index="<%= index %>">
+            <span class="option-icon">✗</span>
+            <span>خطأ</span>
+          </button>
+        </div>
+        <% } else { %>
+        <div class="options-grid mc-grid">
+          <% q.options.forEach((opt, optIndex) => { %>
+          <button class="option-btn mc-btn" data-value="<%= optIndex %>" data-index="<%= index %>">
+            <span class="option-letter"><%= ['أ','ب','ج','د'][optIndex] %></span>
+            <span class="option-text"><%= Array.isArray(opt) ? opt.join(' و') : opt %></span>
+          </button>
+          <% }) %>
+        </div>
+        <% } %>
+      </div>
+      <% }) %>
+
+      <!-- Results Slide -->
+      <div class="question-slide results-slide" id="resultsSlide">
+
+        <!-- Score Header -->
+        <div class="results-header">
+          <div class="results-trophy" id="resultsTrophy">🏆</div>
+          <h2 class="results-title" id="resultsTitle">انتهى الاختبار!</h2>
+
+          <!-- Score Ring + Percent -->
+          <div class="results-score-row">
+            <div class="score-ring-wrap">
+              <svg class="score-ring" viewBox="0 0 120 120">
+                <circle class="ring-bg" cx="60" cy="60" r="50"/>
+                <circle class="ring-fill" id="ringFill" cx="60" cy="60" r="50"
+                        stroke-dasharray="314" stroke-dashoffset="314"/>
+              </svg>
+              <div class="ring-inner">
+                <span class="score-num" id="scoreNum">0</span>
+                <span class="score-denom">/<%= quiz.questions.length %></span>
+              </div>
+            </div>
+            <div class="results-meta">
+              <div class="score-percent-big" id="scorePercent">0%</div>
+              <div class="score-message" id="scoreMessage"></div>
+              <div class="score-mini-stats">
+                <div class="mini-stat correct-stat">
+                  <span class="mini-stat-icon">✅</span>
+                  <span class="mini-stat-num" id="correctCount">0</span>
+                  <span class="mini-stat-label">صحيح</span>
+                </div>
+                <div class="mini-stat-divider"></div>
+                <div class="mini-stat wrong-stat">
+                  <span class="mini-stat-icon">❌</span>
+                  <span class="mini-stat-num" id="wrongCount">0</span>
+                  <span class="mini-stat-label">خطأ</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Tabs + Breakdown -->
+        <div class="breakdown-section">
+          <div class="breakdown-header">
+            <h3 class="breakdown-title">مراجعة الإجابات</h3>
+            <div class="filter-tabs" id="filterTabs">
+              <button class="filter-tab active" data-filter="all" onclick="filterResults(this)">الكل</button>
+              <button class="filter-tab" data-filter="correct" onclick="filterResults(this)">✅ صحيح</button>
+              <button class="filter-tab" data-filter="wrong" onclick="filterResults(this)">❌ خطأ</button>
+            </div>
+          </div>
+          <div class="breakdown-list" id="resultsBreakdown"></div>
+        </div>
+
+        <div class="results-actions">
+          <button class="btn btn-primary" onclick="retakeQuiz()">🔄 إعادة الاختبار</button>
+          <button class="btn btn-wrong-retake" id="retakeWrongBtn" onclick="retakeWrongQuestions()" style="display:none">🎯 أعد الاختبار على الأسئلة الخاطئة</button>
+          <a href="/quiz" class="btn btn-outline">📚 اختبار آخر</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="quiz-nav" id="quizNav">
+      <button class="nav-btn prev-btn" id="prevBtn" onclick="prevQuestion()" disabled>السابق</button>
+      <div class="question-dots" id="questionDots">
+        <% quiz.questions.forEach((q, i) => { %>
+        <div class="q-dot <%= i === 0 ? 'active' : '' %>" data-index="<%= i %>"></div>
+        <% }) %>
+      </div>
+      <button class="nav-btn next-btn" id="nextBtn" onclick="nextQuestion()" disabled>التالي</button>
+    </div>
+  </div>
+</main>
+
+<script>
+  const QUIZ_DATA = <%- JSON.stringify(quiz) %>;
+</script>
+<%- include('partials/footer', { pageScript: 'quiz' }) %>

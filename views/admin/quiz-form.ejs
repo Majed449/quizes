@@ -1,0 +1,229 @@
+<%- include('partials/layout-top', { activePage: 'quizzes' }) %>
+
+<div class="page-actions-bar">
+  <h2 class="page-bar-title"><%= mode === 'create' ? '➕ اختبار جديد' : '✏️ تعديل الاختبار' %></h2>
+  <a href="/admin/quizzes" class="btn-sm">← العودة</a>
+</div>
+
+<form id="quizForm" action="<%= mode === 'create' ? '/admin/quizzes' : '/admin/quizzes/' + quiz.id %>" method="POST">
+  <!-- Quiz Meta -->
+  <div class="section-card">
+    <div class="section-card-header"><h3>📋 معلومات الاختبار</h3></div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">عنوان الاختبار *</label>
+        <input type="text" name="title" class="form-input" required
+               value="<%= quiz ? quiz.title : '' %>" placeholder="مثال: اختبار العلوم العامة">
+      </div>
+      <div class="form-group">
+        <label class="form-label">الوصف</label>
+        <input type="text" name="description" class="form-input"
+               value="<%= quiz ? quiz.description : '' %>" placeholder="وصف مختصر للاختبار">
+      </div>
+      <div class="form-group">
+        <label class="form-label">الأيقونة (إيموجي)</label>
+        <input type="text" name="icon" class="form-input icon-input"
+               value="<%= quiz ? quiz.icon : '📝' %>" placeholder="📝" maxlength="4">
+      </div>
+      <div class="form-group">
+        <label class="form-label">اللون</label>
+        <div class="color-input-wrap">
+          <input type="color" name="color" id="colorPicker" class="color-picker"
+                 value="<%= quiz ? quiz.color : '#00d4aa' %>">
+          <input type="text" id="colorText" class="form-input" style="flex:1"
+                 value="<%= quiz ? quiz.color : '#00d4aa' %>" placeholder="#00d4aa">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Questions Builder -->
+  <div class="section-card">
+    <div class="section-card-header">
+      <h3>❓ الأسئلة (<span id="qCount">0</span>)</h3>
+      <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
+        <button type="button" class="btn-sm btn-green" onclick="addQuestion('truefalse')" title="Alt+T">➕ صح/خطأ</button>
+        <button type="button" class="btn-sm btn-red" onclick="addQuestion('multiple')" title="Alt+M">➕ اختيار متعدد</button>
+        <button type="button" class="btn-sm btn-blue" onclick="openTemplateModal()" title="استخدام قالب">📋 قوالب</button>
+      </div>
+    </div>
+
+    <div id="questionsBuilder" class="questions-builder">
+      <div class="questions-empty" id="emptyMsg">
+        <span>❓</span> لم تضف أي أسئلة بعد — اضغط على أحد الأزرار أعلاه للبدء
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden input for questions JSON -->
+  <input type="hidden" name="questions" id="questionsInput">
+
+  <div class="form-actions">
+    <a href="/admin/quizzes" class="btn btn-outline">إلغاء</a>
+    <button type="submit" class="btn btn-primary" onclick="return prepareSubmit()" title="Ctrl+S">
+      <%= mode === 'create' ? '✅ إنشاء الاختبار' : '💾 حفظ التعديلات' %>
+    </button>
+  </div>
+</form>
+
+<!-- TEMPLATES MODAL -->
+<div id="templateModal" class="modal" style="display:none">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>📋 قوالب الأسئلة</h3>
+      <button class="modal-close" onclick="closeTemplateModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="templatesContainer" class="templates-grid">
+        <div class="loading">جاري التحميل...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #0a0f1e;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #1e2d4a;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #e8edf8;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: #8a9bbf;
+  font-size: 1.5rem;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  background: rgba(255,107,107,0.1);
+  color: #ff6b6b;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-top: 1px solid #1e2d4a;
+  justify-content: flex-end;
+}
+
+.templates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.template-card {
+  background: #131d35;
+  border: 1px solid #1e2d4a;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.template-card:hover {
+  background: #181f38;
+  border-color: #00d4aa;
+}
+
+.template-name {
+  font-weight: 600;
+  color: #e8edf8;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.template-type {
+  color: #8a9bbf;
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+.template-card button {
+  width: 100%;
+  padding: 0.5rem;
+  background: #00d4aa;
+  color: #070b14;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+
+.template-card button:hover {
+  background: #00b89f;
+}
+
+.save-indicator {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: #00d4aa;
+  color: #070b14;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0,212,170,0.3);
+  animation: slideUp 0.3s ease-out;
+  z-index: 999;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+</style>
+
+<script>
+const INITIAL_QUIZ = <%- JSON.stringify(quiz) %>;
+</script>
+<%- include('partials/layout-bottom', { pageScript: 'admin-quiz-form' }) %>

@@ -1,0 +1,36 @@
+<%- include('partials/header', { pageStyle: 'index' }) %>
+
+<main>
+  <section class="page-hero">
+    <div class="page-hero-content">
+      <h1>🎯 الاختبارات</h1>
+      <p>اختر اختبارك وابدأ التحدي — كل سؤال يقربك خطوة للأمام</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-container">
+      <div class="cards-grid">
+        <% quizzes.forEach(quiz => { %>
+        <a href="/quiz/<%= quiz.id %>" class="quiz-card" style="--card-color: <%= quiz.color %>">
+          <div class="quiz-card-top">
+            <span class="quiz-icon"><%= quiz.icon %></span>
+            <span class="quiz-badge"><%= quiz.questions.length %> سؤال</span>
+          </div>
+          <h3 class="quiz-title"><%= quiz.title %></h3>
+          <p class="quiz-desc"><%= quiz.description %></p>
+          <div class="quiz-meta">
+            <span class="quiz-types">
+              <span class="type-dot" style="background:#00d4aa"></span> صح/خطأ &nbsp;
+              <span class="type-dot" style="background:#ff6b6b"></span> اختيار متعدد
+            </span>
+            <span class="quiz-arrow">←</span>
+          </div>
+        </a>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

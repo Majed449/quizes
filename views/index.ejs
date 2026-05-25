@@ -3,11 +3,11 @@
 <main>
   <!-- Hero Section -->
   <section class="hero">
-    <div class="hero-bg">
+    <!-- <div class="hero-bg">
       <div class="hero-orb orb-1"></div>
       <div class="hero-orb orb-2"></div>
       <div class="hero-orb orb-3"></div>
-    </div>
+    </div> -->
     <div class="hero-content">
       <div class="hero-badge">🚀 ابدأ رحلتك التعليمية مع علمني شكراً</div>
       <h1 class="hero-title">
@@ -22,15 +22,15 @@
     </div>
     <div class="hero-visual">
       <div class="hero-card floating">
-        <div class="hcard-icon">📝</div>
+        <div class="hcard-icon"><i class="fa-solid fa-list-check" style="color: var(--accent);"></i></div>
         <div class="hcard-text">صح وخطأ</div>
       </div>
       <div class="hero-card floating-delay-1">
-        <div class="hcard-icon">🎯</div>
+        <div class="hcard-icon"><i class="fa-solid fa-bullseye" style="color: var(--accent-2);"></i></div>
         <div class="hcard-text">اختيار متعدد</div>
       </div>
       <div class="hero-card floating-delay-2">
-        <div class="hcard-icon">📚</div>
+        <div class="hcard-icon"><i class="fa-solid fa-graduation-cap" style="color: var(--accent-3);"></i></div>
         <div class="hcard-text">أسئلة مقالية</div>
       </div>
     </div>
@@ -64,25 +64,46 @@
         <h2 class="section-title">الاختبارات المتاحة</h2>
         <p class="section-sub">اختر من بين اختبارات متنوعة في مواد مختلفة</p>
       </div>
-      <div class="cards-grid">
+
+      <div class="cards-grid" style="margin-bottom: 2.5rem;">
         <% quizzes.forEach(quiz => { %>
-        <a href="/quiz/<%= quiz.id %>" class="quiz-card" style="--card-color: <%= quiz.color %>">
-          <div class="quiz-card-top">
-            <span class="quiz-icon"><%= quiz.icon %></span>
+        <div class="quiz-card" data-quiz-id="<%= quiz.id %>" style="--card-color: <%= quiz.color %>">
+          <div class="quiz-card-top" style="display:flex;justify-content:space-between;align-items:center;width:100%;">
+            <div style="display:flex;align-items:center;gap:0.5rem;">
+              <span class="quiz-icon"><i class="fa-solid fa-clipboard-question" style="color: <%= quiz.color %>;"></i></span>
+              <span class="quiz-pb-badge" id="pb-badge-<%= quiz.id %>" style="display:none;background:rgba(251,191,36,0.1);color:var(--accent-4);border:1px solid rgba(251,191,36,0.25);padding:0.2rem 0.6rem;border-radius:100px;font-size:0.72rem;font-weight:700;"><i class="fa-solid fa-trophy" style="margin-left: 0.25rem;"></i> <span class="pb-val">0%</span></span>
+            </div>
             <span class="quiz-badge"><%= quiz.questions.length %> سؤال</span>
           </div>
           <h3 class="quiz-title"><%= quiz.title %></h3>
+          <% if (quiz.description && quiz.description.trim()) { %>
           <p class="quiz-desc"><%= quiz.description %></p>
-          <div class="quiz-meta">
+          <% } %>
+          <div class="quiz-meta" style="margin-bottom: 0.5rem;">
             <span class="quiz-types">
-              <span class="type-dot" style="background:#00d4aa"></span> صح/خطأ
-              <span class="type-dot" style="background:#ff6b6b"></span> اختيار متعدد
+              <% 
+                const hasTF = quiz.questions.some(q => q.type === 'truefalse');
+                const hasMultiple = quiz.questions.some(q => q.type === 'multiple');
+              %>
+              <% if (hasTF) { %>
+                <span class="type-dot" style="background:var(--accent)"></span> صح/خطأ &nbsp;
+              <% } %>
+              <% if (hasMultiple) { %>
+                <span class="type-dot" style="background:var(--accent-2)"></span> اختيار متعدد
+              <% } %>
+              <% if (!hasTF && !hasMultiple) { %>
+                <span class="type-dot" style="background:var(--text-dim)"></span> فارغ
+              <% } %>
             </span>
-            <span class="quiz-arrow">←</span>
           </div>
-        </a>
+          <div class="quiz-card-actions" style="display: flex; gap: 0.75rem; margin-top: auto; width: 100%;">
+            <a href="/quiz/<%= quiz.id %>" class="btn btn-primary" style="flex: 1; padding: 0.6rem; font-size: 0.82rem; justify-content: center;" title="بدء الاختبار الفردي"><i class="fa-solid fa-play" style="margin-left: 0.3rem;"></i> ابدأ</a>
+            <a href="/battle/create?quizId=<%= quiz.id %>" class="btn btn-outline" style="flex: 1; padding: 0.6rem; font-size: 0.82rem; justify-content: center;" title="إنشاء غرفة تحدي ثنائي ومنافسة زميلك مباشر"><i class="fa-solid fa-gamepad" style="margin-left: 0.3rem;"></i> تحدي زميل</a>
+          </div>
+        </div>
         <% }) %>
       </div>
+
       <div class="section-cta">
         <a href="/quiz" class="btn btn-ghost">عرض جميع الاختبارات</a>
       </div>
@@ -100,11 +121,12 @@
       <div class="cards-grid">
         <% reviewTopics.forEach(topic => { %>
         <a href="/review/<%= topic.id %>" class="review-card" style="--card-color: <%= topic.color %>">
-          <div class="review-card-accent"></div>
-          <div class="review-icon"><%= topic.icon %></div>
+          <div class="review-icon"><i class="fa-solid fa-book-open" style="color: <%= topic.color %>;"></i></div>
           <span class="review-subject"><%= topic.subject %></span>
           <h3 class="review-title"><%= topic.title %></h3>
+          <% if (topic.description && topic.description.trim()) { %>
           <p class="review-desc"><%= topic.description %></p>
+          <% } %>
           <div class="review-sections">
             <span class="sections-count"><%= topic.sections.length %> أقسام</span>
             <span class="questions-count">
@@ -126,21 +148,21 @@
       <div class="steps-grid">
         <div class="step-card">
           <div class="step-num">١</div>
-          <div class="step-icon">📌</div>
+          <div class="step-icon"><i class="fa-solid fa-location-crosshairs" style="color: var(--accent);"></i></div>
           <h3>اختر موضوعك</h3>
           <p>اختر من بين الاختبارات أو موضوعات المراجعة المتاحة</p>
         </div>
-        <div class="step-arrow">←</div>
+        <div class="step-arrow"><i class="fa-solid fa-arrow-left"></i></div>
         <div class="step-card">
           <div class="step-num">٢</div>
-          <div class="step-icon">✍️</div>
+          <div class="step-icon"><i class="fa-solid fa-pen-to-square" style="color: var(--accent-2);"></i></div>
           <h3>أجب على الأسئلة</h3>
           <p>أسئلة صح/خطأ واختيار من متعدد بواجهة سهلة وسلسة</p>
         </div>
-        <div class="step-arrow">←</div>
+        <div class="step-arrow"><i class="fa-solid fa-arrow-left"></i></div>
         <div class="step-card">
           <div class="step-num">٣</div>
-          <div class="step-icon">🏆</div>
+          <div class="step-icon"><i class="fa-solid fa-trophy" style="color: var(--accent-4);"></i></div>
           <h3>اعرف نتيجتك</h3>
           <p>احصل على نتيجتك الفورية مع شرح تفصيلي لكل إجابة</p>
         </div>

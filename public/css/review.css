@@ -28,12 +28,14 @@
 
 /* ===== REVIEW HEADER ===== */
 .review-page-header {
-  background: var(--bg-card);
+  background: color-mix(in srgb, var(--bg-card) 70%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 2.25rem;
   border-top: 3px solid var(--card-color);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-lg);
   position: relative;
   overflow: hidden;
 }
@@ -61,7 +63,7 @@
   font-size: 1.6rem;
   font-weight: 900;
   margin-bottom: 0.35rem;
-  background: linear-gradient(135deg, var(--text), #a0b0d0);
+  background: linear-gradient(135deg, var(--text), var(--text-muted));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -83,7 +85,9 @@
 
 /* ===== TABLE OF CONTENTS ===== */
 .toc-panel {
-  background: var(--bg-card);
+  background: color-mix(in srgb, var(--bg-card) 60%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 1.75rem;
@@ -145,16 +149,6 @@
   padding-right: 1rem;
   position: relative;
 }
-.section-header-bar::before {
-  content: '';
-  position: absolute;
-  top: 50%; right: -4px;
-  transform: translateY(-50%);
-  width: 4px; height: 4px;
-  background: var(--accent);
-  border-radius: 50%;
-  box-shadow: 0 0 8px var(--accent);
-}
 
 .section-heading {
   font-size: 1.2rem;
@@ -166,23 +160,24 @@
 .section-num {
   width: 34px; height: 34px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), #00b896);
-  color: #07091a;
+  background: var(--gradient-btn);
+  color: var(--btn-text-color);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.88rem;
   font-weight: 900;
   flex-shrink: 0;
-  box-shadow: 0 4px 16px rgba(0,212,170,0.3);
+  box-shadow: var(--btn-shadow);
 }
 
 /* ===== CONTENT BOX ===== */
 .content-box {
-  background: var(--bg-2);
+  background: color-mix(in srgb, var(--bg-2) 40%, transparent);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 1.75rem;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
 }
 .content-label {
   font-size: 0.72rem;
@@ -209,7 +204,9 @@
 
 /* ===== ESSAY QUESTION CARD ===== */
 .essay-question-card {
-  background: var(--bg-card);
+  background: color-mix(in srgb, var(--bg-card) 70%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 1.85rem;
@@ -217,11 +214,11 @@
   flex-direction: column;
   gap: 1.35rem;
   transition: var(--transition);
-  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+  box-shadow: var(--shadow);
 }
 .essay-question-card:hover {
-  border-color: var(--border-light);
-  box-shadow: 0 6px 28px rgba(0,0,0,0.3);
+  border-color: rgba(var(--accent-rgb), 0.3);
+  box-shadow: 0 8px 32px rgba(var(--accent-rgb), 0.1);
 }
 
 .essay-q-header {
@@ -275,7 +272,7 @@
 .student-textarea {
   width: 100%;
   min-height: 110px;
-  background: var(--bg);
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
   border: 2px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 1rem 1.1rem;
@@ -283,20 +280,20 @@
   font-family: var(--font);
   font-size: 0.9rem;
   line-height: 1.75;
-  resize: vertical;
+  resize: none;
   transition: var(--transition);
 }
 .student-textarea:focus {
   outline: none;
   border-color: var(--accent-3);
-  box-shadow: 0 0 0 3px rgba(167,139,250,0.1);
+  box-shadow: 0 0 0 3px rgba(var(--accent-3-rgb), 0.12);
 }
 .student-textarea::placeholder { color: var(--text-dim); }
 
 .reveal-btn {
   align-self: flex-start;
   background: transparent;
-  border: 2px solid rgba(167,139,250,0.4);
+  border: 2px solid rgba(var(--accent-3-rgb), 0.35);
   color: var(--accent-3);
   border-radius: var(--radius-sm);
   padding: 0.65rem 1.35rem;
@@ -310,9 +307,9 @@
   gap: 0.5rem;
 }
 .reveal-btn:hover {
-  background: rgba(167,139,250,0.1);
+  background: rgba(var(--accent-3-rgb), 0.08);
   border-color: var(--accent-3);
-  box-shadow: 0 4px 20px rgba(167,139,250,0.2);
+  box-shadow: 0 4px 20px rgba(var(--accent-3-rgb), 0.2);
   transform: translateY(-1px);
 }
 
@@ -374,4 +371,89 @@
   .review-main { padding: 1rem; }
   .review-header-content { flex-direction: column; }
   .review-footer-nav { justify-content: center; }
+}
+
+/* ===== PREMIUM COMPARISON TABLE & MATH STYLES ===== */
+.comparison-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin: 0.5rem 0;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.premium-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: right;
+  font-size: 0.9rem;
+}
+
+.premium-table th {
+  background: var(--bg-2);
+  color: var(--text);
+  font-weight: 800;
+  padding: 0.85rem 1rem;
+  border-bottom: 2px solid var(--border);
+  border-left: 1px solid var(--border);
+  white-space: nowrap;
+  text-align: center;
+}
+
+.premium-table th:last-child {
+  border-left: none;
+}
+
+.premium-table td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+  color: var(--text-muted);
+  line-height: 1.6;
+  text-align: center;
+  font-weight: bolder;
+}
+
+.premium-table td:last-child {
+  border-left: none;
+}
+
+.premium-table tr:last-child td {
+  border-bottom: none;
+}
+
+.premium-table tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.badge-table {
+  background: color-mix(in srgb, var(--accent) 10%, transparent) !important;
+  color: var(--accent) !important;
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent) !important;
+}
+
+.badge-math {
+  background: color-mix(in srgb, var(--accent-3) 10%, transparent) !important;
+  color: var(--accent-3) !important;
+  border: 1px solid color-mix(in srgb, var(--accent-3) 25%, transparent) !important;
+}
+
+.math-problem-box {
+  background: rgba(52, 211, 153, 0.02);
+  border-right: 4px solid var(--accent);
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-sm);
+}
+
+.math-equation {
+  font-family: 'Cambria Math', 'Times New Roman', serif;
+  font-size: 1.15rem;
+  color: var(--text);
+  line-height: 1.8;
+}
+
+.math-solution {
+  font-family: 'Cambria Math', 'Times New Roman', serif;
 }

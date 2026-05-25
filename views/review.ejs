@@ -4,10 +4,10 @@
     <div class="review-wrapper">
       <!-- Review Header -->
       <div class="review-page-header" style="--card-color: <%= topic.color %>">
-        <a href="/review" class="back-btn">← العودة</a>
+        <a href="/review" class="back-btn" style="display: inline-flex; align-items: center; gap: 0.4rem;" title="العودة إلى قائمة المراجعات والصفحة السابقة"><i class="fa-solid fa-arrow-right"></i> العودة</a>
         <div class="review-header-content">
           <span class="review-header-icon">
-            <%= topic.icon %>
+            <i class="fa-solid fa-book-open" style="color: <%= topic.color %>;"></i>
           </span>
           <div>
             <span class="review-subject-tag">
@@ -16,20 +16,22 @@
             <h1>
               <%= topic.title %>
             </h1>
+            <% if (topic.description && topic.description.trim()) { %>
             <p>
               <%= topic.description %>
             </p>
+            <% } %>
           </div>
         </div>
       </div>
 
       <!-- Table of Contents -->
       <div class="toc-panel">
-        <h3 class="toc-title">📋 محتويات المراجعة</h3>
+        <h3 class="toc-title"><i class="fa-solid fa-list-ul" style="color: var(--accent); margin-left: 0.5rem;"></i> محتويات المراجعة</h3>
         <ul class="toc-list">
           <% topic.sections.forEach((section, idx)=> { %>
             <li>
-              <a href="#section-<%= idx %>" class="toc-link">
+              <a href="#section-<%= idx %>" class="toc-link" title="الانتقال السريع لقراءة ودراسة قسم: <%= section.title %>">
                 <span class="toc-num">
                   <%= idx + 1 %>
                 </span>
@@ -55,49 +57,108 @@
           </div>
 
           <!-- Content -->
+          <% if (section.content && section.content.trim()) { %>
           <div class="content-box">
-            <div class="content-label">📝 ملخص الموضوع</div>
+            <div class="content-label"><i class="fa-solid fa-book-open-reader" style="color: var(--accent); margin-left: 0.5rem;"></i> ملخص الموضوع</div>
             <p class="content-text">
               <%- section.content.replace(/\n/g, '<br>' ) %>
             </p>
           </div>
+          <% } %>
 
-          <!-- Essay Questions -->
-          <% section.questions.forEach((q, qIdx)=> { %>
-            <div class="essay-question-card" id="<%= q.id %>">
-              <div class="essay-q-header">
-                <div class="essay-q-num">س<%= qIdx + 1 %>
+          <!-- Section Items (Essay Qs, Tables, Math Problems) -->
+          <% (section.questions || []).forEach((q, qIdx)=> { %>
+            <% if (q.type === 'table') { %>
+              <div class="essay-question-card table-card" id="<%= q.id %>">
+                <div class="essay-q-header">
+                  <div class="essay-q-num">📊</div>
+                  <span class="essay-badge badge-table"><i class="fa-solid fa-table"></i> جدول مقارنة</span>
                 </div>
-                <span class="essay-badge">سؤال مقالي</span>
+                <p class="essay-q-text" style="margin-bottom:0.5rem"><%= q.question %></p>
+                <div class="comparison-table-wrapper">
+                  <table class="premium-table">
+                    <thead>
+                      <tr>
+                        <% (q.headers || '').split('|').forEach(col => { %>
+                          <th><%= col.trim() %></th>
+                        <% }) %>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% (q.rows || '').split('\n').forEach(row => { %>
+                        <% if (row.trim()) { %>
+                          <tr>
+                            <% row.split('|').forEach(cell => { %>
+                              <td><%= cell.trim() %></td>
+                            <% }) %>
+                          </tr>
+                        <% } %>
+                      <% }) %>
+                    </tbody>
+                  </table>
+                </div>
               </div>
-              <p class="essay-q-text">
-                <%= q.question %>
-              </p>
+            <% } else if (q.type === 'math') { %>
+              <div class="essay-question-card math-card" id="<%= q.id %>">
+                <div class="essay-q-header">
+                  <div class="essay-q-num">📐</div>
+                  <span class="essay-badge badge-math"><i class="fa-solid fa-square-root-variable"></i> مسألة رياضية</span>
+                </div>
+                <div class="math-problem-box" style="margin-bottom: 0.5rem;">
+                  <p class="essay-q-text math-equation"><%= q.question %></p>
+                </div>
 
-              <!-- Student answer area -->
-              <div class="student-answer-area">
-                <label class="answer-label">✍️ اكتب إجابتك هنا (للتدريب):</label>
-                <textarea class="student-textarea" placeholder="اكتب إجابتك هنا..."></textarea>
-                <button class="reveal-btn" onclick="toggleAnswer('<%= q.id %>')">
-                  <span class="reveal-icon">👁️</span>
-                  عرض نموذج الإجابة
-                </button>
-              </div>
+                <!-- Student answer area -->
+                <div class="student-answer-area">
+                  <label class="answer-label"><i class="fa-solid fa-pen-to-square" style="color: var(--accent); margin-left: 0.4rem;"></i> اكتب خطوات الحل والنتيجة (للتدريب):</label>
+                  <textarea class="student-textarea math-textarea" placeholder="اكتب مسودة خطوات الحل والناتج النهائي..." title="اكتب مسودة إجابتك هنا للتدريب قبل الاطلاع على نموذج الإجابة النموذجي"></textarea>
+                  <button class="reveal-btn" onclick="toggleAnswer('<%= q.id %>')" title="عرض أو إخفاء الإجابة النموذجية الصحيحة للمقارنة والتقييم الذاتي">
+                    <span class="reveal-icon"><i class="fa-solid fa-eye"></i></span>
+                    عرض نموذج الإجابة
+                  </button>
+                </div>
 
-              <!-- Model Answer (hidden by default) -->
-              <div class="model-answer" id="answer-<%= q.id %>">
-                <div class="model-label">نموذج الإجابة</div>
-                <div class="model-text"><%- q.answer.replace(/\n/g, '<br>' ) %></div>
+                <!-- Model Answer (hidden by default) -->
+                <div class="model-answer" id="answer-<%= q.id %>">
+                  <div class="model-label">خطوات الحل ونموذج الإجابة</div>
+                  <div class="model-text math-solution"><%- q.answer.replace(/\n/g, '<br>' ) %></div>
+                </div>
               </div>
-            </div>
-            <% }) %>
+            <% } else { %>
+              <div class="essay-question-card" id="<%= q.id %>">
+                <div class="essay-q-header">
+                  <div class="essay-q-num">س<%= qIdx + 1 %></div>
+                  <span class="essay-badge">سؤال مقالي</span>
+                </div>
+                <p class="essay-q-text">
+                  <%= q.question %>
+                </p>
+
+                <!-- Student answer area -->
+                <div class="student-answer-area">
+                  <label class="answer-label"><i class="fa-solid fa-pen-to-square" style="color: var(--accent); margin-left: 0.4rem;"></i> اكتب إجابتك هنا (للتدريب):</label>
+                  <textarea class="student-textarea" placeholder="اكتب إجابتك هنا للتمرين العقلي..." title="اكتب مسودة إجابتك هنا للتدريب قبل الاطلاع على نموذج الإجابة النموذجي"></textarea>
+                  <button class="reveal-btn" onclick="toggleAnswer('<%= q.id %>')" title="عرض أو إخفاء الإجابة النموذجية الصحيحة للمقارنة والتقييم الذاتي">
+                    <span class="reveal-icon"><i class="fa-solid fa-eye"></i></span>
+                    عرض نموذج الإجابة
+                  </button>
+                </div>
+
+                <!-- Model Answer (hidden by default) -->
+                <div class="model-answer" id="answer-<%= q.id %>">
+                  <div class="model-label">نموذج الإجابة</div>
+                  <div class="model-text"><%- q.answer.replace(/\n/g, '<br>' ) %></div>
+                </div>
+              </div>
+            <% } %>
+          <% }) %>
         </div>
         <% }) %>
 
           <!-- Navigation -->
           <div class="review-footer-nav">
-            <a href="/review" class="btn btn-outline">← العودة للمراجعات</a>
-            <a href="/quiz" class="btn btn-primary">جرّب اختباراً 🎯</a>
+            <a href="/review" class="btn btn-outline" style="display: inline-flex; align-items: center; gap: 0.4rem;" title="العودة لصفحة قائمة المراجعات"><i class="fa-solid fa-arrow-right"></i> العودة للمراجعات</a>
+            <a href="/quiz" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.4rem;" title="الانتقال لصفحة الاختبارات لاختيار مادة واختبار ذكائك ومعلوماتك">جرّب اختباراً <i class="fa-solid fa-bullseye"></i></a>
           </div>
     </div>
   </main>

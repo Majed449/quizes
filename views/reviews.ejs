@@ -3,7 +3,7 @@
 <main>
   <section class="page-hero">
     <div class="page-hero-content">
-      <h1>📚 المراجعة</h1>
+      <h1><i class="fa-solid fa-book-open" style="color: var(--accent); margin-left: 0.5rem;"></i> المراجعة</h1>
       <p>مراجعة شاملة مع أسئلة مقالية ونماذج إجابة — استعد للاختبار بثقة</p>
     </div>
   </section>
@@ -13,11 +13,12 @@
       <div class="cards-grid">
         <% reviewTopics.forEach(topic => { %>
         <a href="/review/<%= topic.id %>" class="review-card" style="--card-color: <%= topic.color %>">
-          <div class="review-card-accent"></div>
-          <div class="review-icon"><%= topic.icon %></div>
+          <div class="review-icon"><i class="fa-solid fa-graduation-cap" style="color: <%= topic.color %>;"></i></div>
           <span class="review-subject"><%= topic.subject %></span>
           <h3 class="review-title"><%= topic.title %></h3>
+          <% if (topic.description && topic.description.trim()) { %>
           <p class="review-desc"><%= topic.description %></p>
+          <% } %>
           <div class="review-sections">
             <span class="sections-count"><%= topic.sections.length %> أقسام</span>
             <span class="questions-count">

@@ -1,37 +1,35 @@
 <%- include('partials/layout-top', { activePage: 'quizzes' }) %>
 
 <div class="page-actions-bar">
-  <h2 class="page-bar-title"><%= mode === 'create' ? '➕ اختبار جديد' : '✏️ تعديل الاختبار' %></h2>
-  <a href="/admin/quizzes" class="btn-sm">← العودة</a>
+  <h2 class="page-bar-title"><%- mode === 'create' ? '<i class="fa-solid fa-circle-plus" style="color: var(--accent); margin-left: 0.5rem;"></i> اختبار جديد' : '<i class="fa-solid fa-pen-to-square" style="color: var(--accent); margin-left: 0.5rem;"></i> تعديل الاختبار' %></h2>
+  <a href="/admin/quizzes" class="btn-sm" style="display: flex; align-items: center; gap: 0.4rem;"><i class="fa-solid fa-arrow-right"></i> العودة</a>
 </div>
 
 <form id="quizForm" action="<%= mode === 'create' ? '/admin/quizzes' : '/admin/quizzes/' + quiz.id %>" method="POST">
   <!-- Quiz Meta -->
   <div class="section-card">
-    <div class="section-card-header"><h3>📋 معلومات الاختبار</h3></div>
+    <div class="section-card-header"><h3><i class="fa-solid fa-circle-info" style="color: var(--accent); margin-left: 0.5rem;"></i> معلومات الاختبار</h3></div>
     <div class="form-grid">
       <div class="form-group">
         <label class="form-label">عنوان الاختبار *</label>
         <input type="text" name="title" class="form-input" required
-               value="<%= quiz ? quiz.title : '' %>" placeholder="مثال: اختبار العلوم العامة">
+               value="<%= quiz ? quiz.title : '' %>" placeholder="مثال: اختبار العلوم العامة" title="أدخل عنوان الاختبار التعليمي (مثال: البنية التحتية للحوسبة)">
       </div>
       <div class="form-group">
         <label class="form-label">الوصف</label>
         <input type="text" name="description" class="form-input"
-               value="<%= quiz ? quiz.description : '' %>" placeholder="وصف مختصر للاختبار">
+               value="<%= quiz ? quiz.description : '' %>" placeholder="وصف مختصر للاختبار" title="أدخل وصفاً مبسطاً لمساعدة الطالب على فهم محتوى وموضوع الاختبار">
       </div>
+      <!-- Hidden icon input as user doesn't need to specify it manually -->
+      <input type="hidden" name="icon" value="<%= quiz ? quiz.icon : '📝' %>">
+      
       <div class="form-group">
-        <label class="form-label">الأيقونة (إيموجي)</label>
-        <input type="text" name="icon" class="form-input icon-input"
-               value="<%= quiz ? quiz.icon : '📝' %>" placeholder="📝" maxlength="4">
-      </div>
-      <div class="form-group">
-        <label class="form-label">اللون</label>
+        <label class="form-label">اللون المميز</label>
         <div class="color-input-wrap">
           <input type="color" name="color" id="colorPicker" class="color-picker"
-                 value="<%= quiz ? quiz.color : '#00d4aa' %>">
+                 value="<%= quiz ? quiz.color : '#38bdf8' %>" title="اختر لوناً مميزاً لبطاقة وجوانب هذا الاختبار">
           <input type="text" id="colorText" class="form-input" style="flex:1"
-                 value="<%= quiz ? quiz.color : '#00d4aa' %>" placeholder="#00d4aa">
+                 value="<%= quiz ? quiz.color : '#38bdf8' %>" placeholder="#38bdf8" title="يمكنك كتابة رمز اللون بالنظام الست عشري Hex (مثال: #38bdf8)">
         </div>
       </div>
     </div>
@@ -39,18 +37,19 @@
 
   <!-- Questions Builder -->
   <div class="section-card">
-    <div class="section-card-header">
-      <h3>❓ الأسئلة (<span id="qCount">0</span>)</h3>
+    <div class="section-card-header" style="flex-wrap: wrap; gap: 1rem;">
+      <h3><i class="fa-solid fa-list-check" style="color: var(--accent); margin-left: 0.5rem;"></i> الأسئلة (<span id="qCount">0</span>)</h3>
       <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
-        <button type="button" class="btn-sm btn-green" onclick="addQuestion('truefalse')" title="Alt+T">➕ صح/خطأ</button>
-        <button type="button" class="btn-sm btn-red" onclick="addQuestion('multiple')" title="Alt+M">➕ اختيار متعدد</button>
-        <button type="button" class="btn-sm btn-blue" onclick="openTemplateModal()" title="استخدام قالب">📋 قوالب</button>
+        <button type="button" class="btn-sm btn-green" onclick="addQuestion('truefalse')" title="إضافة سؤال صح أو خطأ جديد للاختبار (Alt+T)"><i class="fa-solid fa-circle-plus" style="margin-left: 0.3rem;"></i> صح/خطأ</button>
+        <button type="button" class="btn-sm btn-red" onclick="addQuestion('multiple')" title="إضافة سؤال اختيار من متعدد جديد للاختبار (Alt+M)"><i class="fa-solid fa-circle-plus" style="margin-left: 0.3rem;"></i> اختيار متعدد</button>
+        <button type="button" class="btn-sm btn-blue" onclick="openTemplateModal()" title="تحميل أسئلة جاهزة من قوالب النظام"><i class="fa-solid fa-cubes" style="margin-left: 0.3rem;"></i> قوالب</button>
       </div>
     </div>
 
     <div id="questionsBuilder" class="questions-builder">
       <div class="questions-empty" id="emptyMsg">
-        <span>❓</span> لم تضف أي أسئلة بعد — اضغط على أحد الأزرار أعلاه للبدء
+        <i class="fa-solid fa-clipboard-question" style="font-size: 2rem; display: block; margin-bottom: 0.75rem; color: var(--text-dim);"></i>
+        لم تضف أي أسئلة بعد — اضغط على أحد الأزرار أعلاه للبدء
       </div>
     </div>
   </div>
@@ -59,9 +58,11 @@
   <input type="hidden" name="questions" id="questionsInput">
 
   <div class="form-actions">
-    <a href="/admin/quizzes" class="btn btn-outline">إلغاء</a>
-    <button type="submit" class="btn btn-primary" onclick="return prepareSubmit()" title="Ctrl+S">
-      <%= mode === 'create' ? '✅ إنشاء الاختبار' : '💾 حفظ التعديلات' %>
+    <a href="/admin/quizzes" class="btn btn-outline" title="إلغاء الإجراء والعودة إلى قائمة الاختبارات"><i class="fa-solid fa-xmark" style="margin-left: 0.3rem;"></i> إلغاء</a>
+    <button type="submit" class="btn btn-primary" onclick="return prepareSubmit()" title="حفظ جميع التعديلات والأسئلة الحالية (Ctrl+S)">
+      <span id="submitBtnLabel">
+        <%- mode === 'create' ? '<i class="fa-solid fa-circle-plus" style="margin-left: 0.4rem;"></i> إنشاء الاختبار' : '<i class="fa-solid fa-floppy-disk" style="margin-left: 0.4rem;"></i> حفظ التعديلات' %>
+      </span>
     </button>
   </div>
 </form>
@@ -93,7 +94,8 @@
 }
 
 .modal-content {
-  background: #0a0f1e;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 12px;
   max-width: 500px;
   width: 90%;
@@ -107,18 +109,18 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border-bottom: 1px solid #1e2d4a;
+  border-bottom: 1px solid var(--border);
 }
 
 .modal-header h3 {
   margin: 0;
-  color: #e8edf8;
+  color: var(--text);
 }
 
 .modal-close {
   background: none;
   border: none;
-  color: #8a9bbf;
+  color: var(--text-muted);
   font-size: 1.5rem;
   cursor: pointer;
   width: 32px;
@@ -131,8 +133,8 @@
 }
 
 .modal-close:hover {
-  background: rgba(255,107,107,0.1);
-  color: #ff6b6b;
+  background: color-mix(in srgb, var(--accent-2) 10%, transparent);
+  color: var(--accent-2);
 }
 
 .modal-body {
@@ -143,7 +145,7 @@
   display: flex;
   gap: 0.75rem;
   padding: 1.5rem;
-  border-top: 1px solid #1e2d4a;
+  border-top: 1px solid var(--border);
   justify-content: flex-end;
 }
 
@@ -154,8 +156,8 @@
 }
 
 .template-card {
-  background: #131d35;
-  border: 1px solid #1e2d4a;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 1rem;
   text-align: center;
@@ -163,19 +165,19 @@
 }
 
 .template-card:hover {
-  background: #181f38;
-  border-color: #00d4aa;
+  background: var(--bg-card-hover);
+  border-color: var(--accent);
 }
 
 .template-name {
   font-weight: 600;
-  color: #e8edf8;
+  color: var(--text);
   margin-bottom: 0.5rem;
   font-size: 0.95rem;
 }
 
 .template-type {
-  color: #8a9bbf;
+  color: var(--text-muted);
   font-size: 0.85rem;
   margin-bottom: 0.75rem;
 }
@@ -183,8 +185,8 @@
 .template-card button {
   width: 100%;
   padding: 0.5rem;
-  background: #00d4aa;
-  color: #070b14;
+  background: var(--accent);
+  color: var(--btn-text-color);
   border: none;
   border-radius: 6px;
   font-weight: 600;
@@ -194,19 +196,19 @@
 }
 
 .template-card button:hover {
-  background: #00b89f;
+  filter: brightness(1.1);
 }
 
 .save-indicator {
   position: fixed;
   bottom: 2rem;
   right: 2rem;
-  background: #00d4aa;
-  color: #070b14;
+  background: var(--accent);
+  color: var(--btn-text-color);
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   font-weight: 600;
-  box-shadow: 0 8px 24px rgba(0,212,170,0.3);
+  box-shadow: var(--shadow-accent);
   animation: slideUp 0.3s ease-out;
   z-index: 999;
 }

@@ -4,18 +4,46 @@
   <div class="quiz-wrapper">
     <!-- Quiz Header -->
     <div class="quiz-header" style="--card-color: <%= quiz.color %>">
-      <a href="/quiz" class="back-btn">← العودة</a>
-      <div class="quiz-header-info">
-        <span class="quiz-header-icon"><%= quiz.icon %></span>
-        <div>
-          <h1 class="quiz-page-title"><%= quiz.title %></h1>
-          <p class="quiz-page-desc"><%= quiz.description %></p>
+      <a href="/quiz" class="back-btn" style="display: inline-flex; align-items: center; gap: 0.4rem;" title="العودة إلى قائمة الاختبارات والصفحة السابقة"><i class="fa-solid fa-arrow-right"></i> العودة</a>
+      <div class="quiz-header-info" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+        <div style="display:flex;align-items:center;gap:1.1rem;">
+          <span class="quiz-header-icon"><i class="fa-solid fa-clipboard-question" style="color: <%= quiz.color %>;"></i></span>
+          <div>
+            <h1 class="quiz-page-title"><%= quiz.title %></h1>
+            <p class="quiz-page-desc"><%= quiz.description %></p>
+          </div>
+        </div>
+
+        <div class="quiz-header-widgets" style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+          <!-- Personal Best Widget -->
+          <div class="quiz-widget pb-widget" id="personalBestWidget" style="display:none;" title="أعلى نسبة تم تحقيقها في هذا الاختبار محلياً">
+            <span class="pb-badge"><i class="fa-solid fa-trophy" style="color: var(--accent-4); margin-left: 0.3rem;"></i> أفضل نتيجة: <span id="personalBestScore">0%</span></span>
+          </div>
+
+          <!-- Timer Widget -->
+          <div class="quiz-widget timer-widget" style="display:flex;align-items:center;gap:0.4rem;background:rgba(255,255,255,0.03);border:1px solid var(--border);padding:0.35rem 0.75rem;border-radius:100px;font-size:0.82rem;">
+            <label for="timerSelect" class="widget-label" style="color:var(--text-muted);font-weight:700;"><i class="fa-solid fa-clock" style="color: var(--accent); margin-left: 0.4rem;"></i></label>
+            <select id="timerSelect" class="widget-select" style="display:none;background:transparent;border:none;color:var(--text);font-family:var(--font);font-weight:700;cursor:pointer;outline:none;" title="تغيير أو تحديد وقت لحل الاختبار">
+              <option value="unlimited">دون وقت</option>
+              <option value="180">3 دقائق</option>
+              <option value="300">5 دقائق</option>
+              <option value="600">10 دقائق</option>
+              <option value="1200">20 دقيقة</option>
+              <option value="1800">30 دقيقة</option>
+            </select>
+            <span id="timerDisplay" class="timer-display" style="font-family:monospace;font-weight:900;color:var(--accent);font-size:0.95rem;min-width:45px;text-align:center;" title="الوقت المتبقي لانتهاء الاختبار">00:00</span>
+          </div>
+
+          <!-- Audio Widget -->
+          <div class="quiz-widget audio-widget">
+            <button id="audioToggleBtn" class="audio-toggle-btn" style="background:rgba(255,255,255,0.03);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.9rem;transition:var(--transition);" title="كتم/تفعيل المؤثرات الصوتية المصاحبة للحل والنتيجة"><i class="fa-solid fa-volume-high"></i></button>
+          </div>
         </div>
       </div>
-      <div class="quiz-progress-bar">
+      <div class="quiz-progress-bar" id="quizProgressBarContainer" style="display:none;">
         <div class="quiz-progress-fill" id="progressFill" style="width: 0%"></div>
       </div>
-      <div class="quiz-progress-info">
+      <div class="quiz-progress-info" id="quizProgressInfoContainer" style="display:none;">
         <span id="progressText">السؤال 1 من <%= quiz.questions.length %></span>
         <span id="progressPercent">0%</span>
       </div>
@@ -23,29 +51,92 @@
 
     <!-- Questions Container -->
     <div class="questions-container" id="questionsContainer">
+      <!-- Start Screen Slide -->
+      <div class="question-slide active" id="startSlide" style="text-align: center; padding: 2rem 1.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 280px;">
+        <div class="start-icon-wrap" style="width:80px;height:80px;border-radius:50%;background:color-mix(in srgb, <%= quiz.color %> 15%, transparent);border:2px dashed <%= quiz.color %>;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem auto;font-size:2.2rem;color:<%= quiz.color %>;">
+          <%= quiz.icon || '📝' %>
+        </div>
+        <h2 class="start-quiz-title" style="font-size:1.6rem;margin-bottom:0.5rem;font-weight:850;color:var(--text);"><%= quiz.title %></h2>
+        <p class="start-quiz-desc" style="color:var(--text-muted);font-size:0.9rem;max-width:480px;margin:0 auto 1.75rem auto;line-height:1.6;"><%= quiz.description || 'تحدي معلوماتك وراجع دروسك بذكاء وسرعة.' %></p>
+        
+        <div class="start-settings-card" style="background:color-mix(in srgb, var(--bg-card) 60%, transparent);border:1px solid var(--border);border-radius:16px;padding:1.25rem;width:100%;max-width:420px;margin:0 auto 1.75rem auto;display:flex;flex-direction:column;gap:1rem;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);position:relative;z-index:10;">
+
+          <% if (settings.allowCustomQuestionCount && quiz.questions.length > 5) { %>
+          <!-- Question Count — Custom Select -->
+          <input type="hidden" id="questionCountSelect" value="all">
+          <div class="start-setting-row">
+            <span class="start-setting-label"><i class="fa-solid fa-list-ol" style="color:var(--accent);margin-left:0.4rem;"></i> عدد الأسئلة</span>
+            <div class="custom-select-container start-custom-select" data-target="questionCountSelect">
+              <div class="custom-select-trigger" tabindex="0" role="combobox" aria-expanded="false">
+                <span class="custom-select-value">كل الأسئلة (<%= quiz.questions.length %>)</span>
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+              <div class="custom-select-options" role="listbox">
+                <% if (quiz.questions.length >= 5) { %>
+                <div class="custom-select-option" data-value="5" role="option">5 أسئلة</div>
+                <% } %>
+                <% if (quiz.questions.length >= 10) { %>
+                <div class="custom-select-option" data-value="10" role="option">10 أسئلة</div>
+                <% } %>
+                <% if (quiz.questions.length >= 20) { %>
+                <div class="custom-select-option" data-value="20" role="option">20 سؤال</div>
+                <% } %>
+                <% if (quiz.questions.length >= 50) { %>
+                <div class="custom-select-option" data-value="50" role="option">50 سؤال</div>
+                <% } %>
+                <div class="custom-select-option selected" data-value="all" role="option">كل الأسئلة (<%= quiz.questions.length %>)</div>
+              </div>
+            </div>
+          </div>
+          <% } %>
+
+          <!-- Time Limit — Custom Select -->
+          <input type="hidden" id="startTimerSelect" value="unlimited">
+          <div class="start-setting-row">
+            <span class="start-setting-label"><i class="fa-solid fa-clock" style="color:var(--accent-2);margin-left:0.4rem;"></i> وقت الحل</span>
+            <div class="custom-select-container start-custom-select" data-target="startTimerSelect">
+              <div class="custom-select-trigger" tabindex="0" role="combobox" aria-expanded="false">
+                <span class="custom-select-value">دون وقت محدد</span>
+                <i class="fa-solid fa-chevron-down"></i>
+              </div>
+              <div class="custom-select-options" role="listbox">
+                <div class="custom-select-option selected" data-value="unlimited" role="option">دون وقت محدد</div>
+                <div class="custom-select-option" data-value="180" role="option">3 دقائق</div>
+                <div class="custom-select-option" data-value="300" role="option">5 دقائق</div>
+                <div class="custom-select-option" data-value="600" role="option">10 دقائق</div>
+                <div class="custom-select-option" data-value="1200" role="option">20 دقيقة</div>
+                <div class="custom-select-option" data-value="1800" role="option">30 دقيقة</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="startQuizChallenge()" style="font-size:0.95rem;padding:0.75rem 2rem;border-radius:50px;font-weight:800;box-shadow:0 8px 24px color-mix(in srgb, var(--accent) 25%, transparent);display:flex;align-items:center;gap:0.5rem;" title="بدء الاختبار بالإعدادات المحددة"><i class="fa-solid fa-rocket"></i> ابدأ الاختبار الآن</button>
+      </div>
+
       <% quiz.questions.forEach((q, index) => { %>
-      <div class="question-slide <%= index === 0 ? 'active' : '' %>" data-index="<%= index %>">
+      <div class="question-slide" data-index="<%= index %>">
         <div class="question-number">السؤال <%= index + 1 %></div>
         <div class="question-type-badge <%= q.type === 'truefalse' ? 'badge-tf' : 'badge-mc' %>">
-          <%= q.type === 'truefalse' ? '✓ صح أم خطأ' : '🎯 اختيار من متعدد' %>
+          <%- q.type === 'truefalse' ? '<i class="fa-solid fa-circle-check" style="margin-left: 0.4rem;"></i> صح أم خطأ' : '<i class="fa-solid fa-list-ul" style="margin-left: 0.4rem;"></i> اختيار من متعدد' %>
         </div>
         <h2 class="question-text"><%= q.question %></h2>
 
         <% if (q.type === 'truefalse') { %>
         <div class="options-grid tf-grid">
-          <button class="option-btn tf-btn" data-value="true" data-index="<%= index %>">
-            <span class="option-icon">✓</span>
+          <button class="option-btn tf-btn" data-value="true" data-index="<%= index %>" title="تحديد صح (True) كإجابة لهذا السؤال">
+            <span class="option-icon"><i class="fa-solid fa-check"></i></span>
             <span>صح</span>
           </button>
-          <button class="option-btn tf-btn" data-value="false" data-index="<%= index %>">
-            <span class="option-icon">✗</span>
+          <button class="option-btn tf-btn" data-value="false" data-index="<%= index %>" title="تحديد خطأ (False) كإجابة لهذا السؤال">
+            <span class="option-icon"><i class="fa-solid fa-xmark"></i></span>
             <span>خطأ</span>
           </button>
         </div>
         <% } else { %>
         <div class="options-grid mc-grid">
           <% q.options.forEach((opt, optIndex) => { %>
-          <button class="option-btn mc-btn" data-value="<%= optIndex %>" data-index="<%= index %>">
+          <button class="option-btn mc-btn" data-value="<%= optIndex %>" data-index="<%= index %>" title="تحديد هذا الخيار كإجابة لهذا السؤال">
             <span class="option-letter"><%= ['أ','ب','ج','د'][optIndex] %></span>
             <span class="option-text"><%= Array.isArray(opt) ? opt.join(' و') : opt %></span>
           </button>
@@ -60,7 +151,7 @@
 
         <!-- Score Header -->
         <div class="results-header">
-          <div class="results-trophy" id="resultsTrophy">🏆</div>
+          <div class="results-trophy" id="resultsTrophy"><i class="fa-solid fa-trophy" style="color: var(--accent-4); font-size: 3rem;"></i></div>
           <h2 class="results-title" id="resultsTitle">انتهى الاختبار!</h2>
 
           <!-- Score Ring + Percent -->
@@ -81,13 +172,13 @@
               <div class="score-message" id="scoreMessage"></div>
               <div class="score-mini-stats">
                 <div class="mini-stat correct-stat">
-                  <span class="mini-stat-icon">✅</span>
+                  <span class="mini-stat-icon"><i class="fa-solid fa-circle-check" style="color: var(--accent); margin-left: 0.3rem;"></i></span>
                   <span class="mini-stat-num" id="correctCount">0</span>
                   <span class="mini-stat-label">صحيح</span>
                 </div>
                 <div class="mini-stat-divider"></div>
                 <div class="mini-stat wrong-stat">
-                  <span class="mini-stat-icon">❌</span>
+                  <span class="mini-stat-icon"><i class="fa-solid fa-circle-xmark" style="color: var(--accent-2); margin-left: 0.3rem;"></i></span>
                   <span class="mini-stat-num" id="wrongCount">0</span>
                   <span class="mini-stat-label">خطأ</span>
                 </div>
@@ -101,31 +192,31 @@
           <div class="breakdown-header">
             <h3 class="breakdown-title">مراجعة الإجابات</h3>
             <div class="filter-tabs" id="filterTabs">
-              <button class="filter-tab active" data-filter="all" onclick="filterResults(this)">الكل</button>
-              <button class="filter-tab" data-filter="correct" onclick="filterResults(this)">✅ صحيح</button>
-              <button class="filter-tab" data-filter="wrong" onclick="filterResults(this)">❌ خطأ</button>
+              <button class="filter-tab active" data-filter="all" onclick="filterResults(this)" title="عرض مراجعة لجميع إجاباتك بالتفصيل">الكل</button>
+              <button class="filter-tab" data-filter="correct" onclick="filterResults(this)" title="عرض إجاباتك الصحيحة فقط"><i class="fa-solid fa-circle-check" style="color: var(--accent); margin-left: 0.3rem;"></i> صحيح</button>
+              <button class="filter-tab" data-filter="wrong" onclick="filterResults(this)" title="عرض الأسئلة التي تمت إجابتها بشكل خاطئ لمراجعة التبرير"><i class="fa-solid fa-circle-xmark" style="color: var(--accent-2); margin-left: 0.3rem;"></i> خطأ</button>
             </div>
           </div>
           <div class="breakdown-list" id="resultsBreakdown"></div>
         </div>
 
         <div class="results-actions">
-          <button class="btn btn-primary" onclick="retakeQuiz()">🔄 إعادة الاختبار</button>
-          <button class="btn btn-wrong-retake" id="retakeWrongBtn" onclick="retakeWrongQuestions()" style="display:none">🎯 أعد الاختبار على الأسئلة الخاطئة</button>
-          <a href="/quiz" class="btn btn-outline">📚 اختبار آخر</a>
+          <button class="btn btn-primary" onclick="retakeQuiz()" title="إعادة حل هذا الاختبار بالكامل من جديد"><i class="fa-solid fa-rotate-left" style="margin-left: 0.4rem;"></i> إعادة الاختبار</button>
+          <button class="btn btn-wrong-retake" id="retakeWrongBtn" onclick="retakeWrongQuestions()" style="display:none" title="تصفية وإعادة اختبار نفسك في الأسئلة التي أخطأت بها فقط"><i class="fa-solid fa-circle-question" style="margin-left: 0.4rem;"></i> أعد الاختبار على الأسئلة الخاطئة</button>
+          <a href="/quiz" class="btn btn-outline" title="الرجوع لصفحة الاختبارات لتصفح وحل اختبار آخر"><i class="fa-solid fa-book-open" style="margin-left: 0.4rem;"></i> اختبار آخر</a>
         </div>
       </div>
     </div>
 
     <!-- Navigation -->
     <div class="quiz-nav" id="quizNav">
-      <button class="nav-btn prev-btn" id="prevBtn" onclick="prevQuestion()" disabled>السابق</button>
+      <button class="nav-btn prev-btn" id="prevBtn" onclick="prevQuestion()" disabled title="العودة للسؤال السابق">السابق</button>
       <div class="question-dots" id="questionDots">
         <% quiz.questions.forEach((q, i) => { %>
-        <div class="q-dot <%= i === 0 ? 'active' : '' %>" data-index="<%= i %>"></div>
+        <div class="q-dot <%= i === 0 ? 'active' : '' %>" data-index="<%= i %>" title="الذهاب للسؤال رقم <%= i + 1 %>"></div>
         <% }) %>
       </div>
-      <button class="nav-btn next-btn" id="nextBtn" onclick="nextQuestion()" disabled>التالي</button>
+      <button class="nav-btn next-btn" id="nextBtn" onclick="nextQuestion()" disabled title="التقدم للسؤال التالي">التالي</button>
     </div>
   </div>
 </main>

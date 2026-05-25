@@ -1,0 +1,188 @@
+<%- include('partials/header', { pageStyle: 'chat' }) %>
+
+<main class="chat-main">
+  <!-- Mobile Sidebar Drawer Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <div class="chat-wrapper">
+    <!-- Right Panel: Instructions & Quick Actions Grid (Collapsible/Drawer on Mobile) -->
+    <div class="chat-sidebar" id="chatSidebar">
+      <div class="sidebar-header">
+        <button class="sidebar-close-btn" onclick="toggleSidebar()" title="إغلاق القائمة"><i class="fa-solid fa-xmark"></i></button>
+        <span class="sidebar-icon"><i class="fa-solid fa-robot"></i></span>
+        <h3>المساعد الدراسي الذكي</h3>
+        <p>مرحباً بك! أنا رفيقك التعليمي القائم على الذكاء الاصطناعي المبسط. تعلم واختبر نفسك فورياً.</p>
+      </div>
+
+      <!-- Mobile Settings Section (visible inside drawer on mobile screens) -->
+      <div class="mobile-drawer-settings">
+        <h4><i class="fa-solid fa-sliders"></i> إعدادات البوت والأسئلة</h4>
+        
+        <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+          <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-align: right;">شخصية المساعد الدراسي:</span>
+          <!-- Custom Personality Dropdown (Drawer) -->
+          <div class="custom-select-container" id="personalitySelectDrawer" data-cs-chat="personality" title="اختر شخصية البوت">
+            <div class="custom-select-trigger" tabindex="0" role="combobox" aria-expanded="false">
+              <span class="custom-select-value">المساعد الافتراضي 🤖</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="custom-select-options" role="listbox">
+              <div class="custom-select-option selected" data-value="default" role="option">المساعد الافتراضي 🤖</div>
+              <div class="custom-select-option" data-value="encouraging" role="option">الصديق المشجع 🤗</div>
+              <div class="custom-select-option" data-value="strict" role="option">المعلم الصارم 👨‍🏫</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.35rem;">
+          <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-align: right;">تصفية نوع الأسئلة:</span>
+          <!-- Custom Question Filter Dropdown (Drawer) -->
+          <div class="custom-select-container" id="filterSelectDrawer" data-cs-chat="filter" title="تصفية نوع الأسئلة">
+            <div class="custom-select-trigger" tabindex="0" role="combobox" aria-expanded="false">
+              <span class="custom-select-value">كل الأسئلة 🎲</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="custom-select-options" role="listbox">
+              <div class="custom-select-option selected" data-value="all" role="option">كل الأسئلة 🎲</div>
+              <div class="custom-select-option" data-value="multiple" role="option">اختيارات 🔘</div>
+              <div class="custom-select-option" data-value="truefalse" role="option">صح وخطأ ☑️</div>
+              <div class="custom-select-option" data-value="essay" role="option">سؤال مقالي ✍️</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="instructions-section">
+        <h4 class="section-title"><i class="fa-solid fa-circle-info"></i> تعليمات الاستخدام</h4>
+        <ul class="instructions-list">
+          <li>يمكنك التحدث معي بشكل طبيعي كمعلم مساعد.</li>
+          <li>عند طلب سؤال، سأقوم باختيار سؤال عشوائي من المنصة.</li>
+          <li>في الأسئلة المقالية، سأقوم بحساب تطابق إجابتك بالمعنى مع الحل النموذجي.</li>
+          <li>إذا تجاوزت نسبة التقارب <strong>75%</strong>، ستعتبر إجابتك صحيحة!</li>
+        </ul>
+      </div>
+
+      <div class="quick-cards-grid">
+        <div class="quick-card" onclick="triggerQuickAction('سؤال عشوائي')" title="اطلب سؤالاً عشوائياً للحل">
+          <div class="qcard-icon" style="color: var(--accent);"><i class="fa-solid fa-dice"></i></div>
+          <div class="qcard-content">
+            <h5>سؤال عشوائي</h5>
+            <p>سحب سؤال عشوائي (اختيارات، صح وخطأ، أو مقالي) من قاعدة البيانات.</p>
+          </div>
+        </div>
+
+        <div class="quick-card" onclick="triggerQuickAction('عرض الحل')" title="اكشف الإجابة النموذجية للسؤال النشط">
+          <div class="qcard-icon" style="color: var(--accent-3);"><i class="fa-solid fa-lightbulb"></i></div>
+          <div class="qcard-content">
+            <h5>كشف الحل والخطوات</h5>
+            <p>إذا واجهت صعوبة في حل السؤال النشط، سأكشف لك الحل مع الشرح.</p>
+          </div>
+        </div>
+
+        <div class="quick-card" onclick="triggerQuickAction('بطاقات تفاعلية')" title="ابدأ تحدي البطاقات التعليمية التفاعلية">
+          <div class="qcard-icon" style="color: var(--accent-2);"><i class="fa-solid fa-clone"></i></div>
+          <div class="qcard-content">
+            <h5>بطاقات تفاعلية 🎴</h5>
+            <p>تحدي الذاكرة واستعراض البطاقات التعليمية التفاعلية فليب كارت.</p>
+          </div>
+        </div>
+
+        <div class="quick-card" onclick="triggerQuickAction('مراجعة التكرار')" title="راجع الكروت المستحقة بنظام التكرار المتباعد">
+          <div class="qcard-icon" style="color: var(--accent);"><i class="fa-solid fa-calendar-days"></i></div>
+          <div class="qcard-content">
+            <h5>مراجعة التكرار 📅</h5>
+            <p>مراجعة الكروت المستحقة بنظام التكرار المتباعد الذكي لتثبيت المعلومات.</p>
+          </div>
+        </div>
+
+        <a href="/review" class="quick-card" title="تصفح جميع المراجعات والملخصات">
+          <div class="qcard-icon" style="color: var(--accent-3);"><i class="fa-solid fa-book-open"></i></div>
+          <div class="qcard-content">
+            <h5>تصفح المراجعات</h5>
+            <p>اذهب لصفحة الملخصات والمقارنات للمذاكرة قبل بدء الأسئلة.</p>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Left Panel: Chat Area -->
+    <div class="chat-area">
+      <!-- Chat Header -->
+      <div class="chat-area-header">
+        <div class="bot-info">
+          <div class="bot-avatar">
+            <i class="fa-solid fa-robot"></i>
+            <span class="status-indicator"></span>
+          </div>
+          <div>
+            <h4>البوت التعليمي</h4>
+            <p class="bot-status">نشط ومستعد لمساعدتك</p>
+          </div>
+        </div>
+        <div class="chat-header-actions">
+          <!-- Custom Personality Dropdown (Header) -->
+          <div class="custom-select-container chat-header-select" id="personalitySelectHeader" data-cs-chat="personality" title="اختر شخصية البوت">
+            <div class="custom-select-trigger" tabindex="0" role="combobox" aria-expanded="false">
+              <span class="custom-select-value">المساعد الافتراضي</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="custom-select-options" role="listbox">
+              <div class="custom-select-option selected" data-value="default" role="option">المساعد الافتراضي</div>
+              <div class="custom-select-option" data-value="encouraging" role="option">الصديق المشجع</div>
+              <div class="custom-select-option" data-value="strict" role="option">المعلم الصارم</div>
+            </div>
+          </div>
+
+          <!-- Custom Question Filter Dropdown (Header) -->
+          <div class="custom-select-container chat-header-select" id="filterSelectHeader" data-cs-chat="filter" title="تصفية نوع الأسئلة">
+            <div class="custom-select-trigger" tabindex="0" role="combobox" aria-expanded="false">
+              <span class="custom-select-value">كل الأسئلة 🎲</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="custom-select-options" role="listbox">
+              <div class="custom-select-option selected" data-value="all" role="option">كل الأسئلة</div>
+              <div class="custom-select-option" data-value="multiple" role="option">اختيارات</div>
+              <div class="custom-select-option" data-value="truefalse" role="option">صح وخطأ</div>
+              <div class="custom-select-option" data-value="essay" role="option">سؤال مقالي</div>
+            </div>
+          </div>
+
+          <!-- Toggle Sidebar Info on Mobile -->
+          <button onclick="toggleSidebar()" class="action-circle-btn sidebar-toggle-btn" title="تعليمات وأدوات المساعد"><i class="fa-solid fa-circle-question"></i></button>
+
+          <!-- Clear Conversation -->
+          <button onclick="clearChatLog()" class="action-circle-btn" title="مسح المحادثة بالكامل"><i class="fa-solid fa-trash-can"></i></button>
+        </div>
+      </div>
+
+      <!-- Chat Log Box -->
+      <div class="chat-messages-container" id="chatMessages">
+        <!-- Initial Greetings Message -->
+        <div class="message-wrapper incoming">
+          <div class="message-avatar"><i class="fa-solid fa-robot"></i></div>
+          <div class="message-bubble">
+            <p>أهلاً بك يا <strong id="chatPlayerName"><%= playerName || 'طالبنا العزيز' %></strong>! 👋 أنا مساعدك الدراسي الذكي.</p>
+            <p>اضغط على بطاقة **"سؤال عشوائي"** أو **"بطاقات تفاعلية"** لبدء المذاكرة والتحدي معايا!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Action Mini Pills (above input) -->
+      <div class="quick-pills-bar">
+        <button class="pill-btn" onclick="triggerQuickAction('سؤال عشوائي')">سؤال عشوائي <i class="fa-solid fa-dice"></i></button>
+        <button class="pill-btn" onclick="triggerQuickAction('تلميح')">تلميح <i class="fa-regular fa-lightbulb"></i></button>
+        <button class="pill-btn" onclick="triggerQuickAction('عرض الحل')">عرض الحل <i class="fa-solid fa-lightbulb"></i></button>
+        <button class="pill-btn" onclick="triggerQuickAction('بطاقات تفاعلية')">بطاقات تفاعلية <i class="fa-solid fa-clone"></i></button>
+        <button class="pill-btn" onclick="triggerQuickAction('مراجعة التكرار')">مراجعة التكرار <i class="fa-solid fa-repeat"></i></button>
+      </div>
+
+      <!-- Chat Input Section -->
+      <form id="chatForm" class="chat-input-bar">
+        <input type="text" id="userInput" placeholder="اكتب إجابتك أو رسالتك هنا..." required autocomplete="off" maxlength="500">
+        <button type="submit" class="send-message-btn" title="إرسال الرسالة"><i class="fa-solid fa-paper-plane"></i></button>
+      </form>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer', { pageScript: 'chat' }) %>

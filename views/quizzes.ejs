@@ -3,7 +3,7 @@
 <main>
   <section class="page-hero">
     <div class="page-hero-content">
-      <h1>🎯 الاختبارات</h1>
+      <h1><i class="fa-solid fa-bullseye" style="color: var(--accent); margin-left: 0.5rem;"></i> الاختبارات</h1>
       <p>اختر اختبارك وابدأ التحدي — كل سؤال يقربك خطوة للأمام</p>
     </div>
   </section>
@@ -12,21 +12,40 @@
     <div class="section-container">
       <div class="cards-grid">
         <% quizzes.forEach(quiz => { %>
-        <a href="/quiz/<%= quiz.id %>" class="quiz-card" style="--card-color: <%= quiz.color %>">
-          <div class="quiz-card-top">
-            <span class="quiz-icon"><%= quiz.icon %></span>
+        <div class="quiz-card" data-quiz-id="<%= quiz.id %>" style="--card-color: <%= quiz.color %>">
+          <div class="quiz-card-top" style="display:flex;justify-content:space-between;align-items:center;width:100%;">
+            <div style="display:flex;align-items:center;gap:0.5rem;">
+              <span class="quiz-icon"><i class="fa-solid fa-clipboard-question" style="color: <%= quiz.color %>;"></i></span>
+              <span class="quiz-pb-badge" id="pb-badge-<%= quiz.id %>" style="display:none;background:rgba(251,191,36,0.1);color:var(--accent-4);border:1px solid rgba(251,191,36,0.25);padding:0.2rem 0.6rem;border-radius:100px;font-size:0.72rem;font-weight:700;"><i class="fa-solid fa-trophy" style="margin-left: 0.25rem; margin-top: 0.25rem;"></i> <span class="pb-val">0%</span></span>
+            </div>
             <span class="quiz-badge"><%= quiz.questions.length %> سؤال</span>
           </div>
           <h3 class="quiz-title"><%= quiz.title %></h3>
+          <% if (quiz.description && quiz.description.trim()) { %>
           <p class="quiz-desc"><%= quiz.description %></p>
-          <div class="quiz-meta">
+          <% } %>
+          <div class="quiz-meta" style="margin-bottom: 0.5rem;">
             <span class="quiz-types">
-              <span class="type-dot" style="background:#00d4aa"></span> صح/خطأ &nbsp;
-              <span class="type-dot" style="background:#ff6b6b"></span> اختيار متعدد
+              <% 
+                const hasTF = quiz.questions.some(q => q.type === 'truefalse');
+                const hasMultiple = quiz.questions.some(q => q.type === 'multiple');
+              %>
+              <% if (hasTF) { %>
+                <span class="type-dot" style="background:var(--accent)"></span> صح/خطأ &nbsp;
+              <% } %>
+              <% if (hasMultiple) { %>
+                <span class="type-dot" style="background:var(--accent-2)"></span> اختيار متعدد
+              <% } %>
+              <% if (!hasTF && !hasMultiple) { %>
+                <span class="type-dot" style="background:var(--text-dim)"></span> فارغ
+              <% } %>
             </span>
-            <span class="quiz-arrow">←</span>
           </div>
-        </a>
+          <div class="quiz-card-actions" style="display: flex; gap: 0.75rem; margin-top: auto; width: 100%;">
+            <a href="/quiz/<%= quiz.id %>" class="btn btn-primary" style="flex: 1; padding: 0.6rem; font-size: 0.82rem; justify-content: center;" title="بدء الاختبار الفردي"><i class="fa-solid fa-play" style="margin-left: 0.3rem;"></i> ابدأ</a>
+            <a href="/battle/create?quizId=<%= quiz.id %>" class="btn btn-outline" style="flex: 1; padding: 0.6rem; font-size: 0.82rem; justify-content: center;" title="إنشاء غرفة تحدي ثنائي ومنافسة زميلك مباشر"><i class="fa-solid fa-gamepad" style="margin-left: 0.3rem;"></i> تحدي زميل</a>
+          </div>
+        </div>
         <% }) %>
       </div>
     </div>

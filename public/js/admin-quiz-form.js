@@ -346,6 +346,19 @@ function prepareSubmit() {
         alert(`السؤال رقم ${i + 1} يجب أن يحتوي على خيارين على الأقل`);
         return false;
       }
+      if (q.answer === undefined || q.answer === null || q.answer < 0 || q.answer >= q.options.length) {
+        alert(`يرجى اختيار الإجابة الصحيحة للسؤال رقم ${i + 1}`);
+        return false;
+      }
+      if (!q.options[q.answer] || !q.options[q.answer].trim()) {
+        alert(`الإجابة الصحيحة المحددة للسؤال رقم ${i + 1} لا يمكن أن تكون خياراً فارغاً`);
+        return false;
+      }
+    } else if (q.type === 'truefalse') {
+      if (q.answer !== true && q.answer !== false) {
+        alert(`يرجى تحديد الإجابة الصحيحة (صح أو خطأ) للسؤال رقم ${i + 1}`);
+        return false;
+      }
     }
   }
   document.getElementById('questionsInput').value = JSON.stringify(questions);

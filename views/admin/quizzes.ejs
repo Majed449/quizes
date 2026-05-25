@@ -2,28 +2,40 @@
 
 <div class="page-actions-bar">
   <div>
-    <h2 class="page-bar-title">🎯 الاختبارات (<span id="quizCount"><%= quizzes.length %></span>)</h2>
-    <div class="search-filter-wrap" style="margin-top:0.75rem">
-      <input type="text" id="searchInput" class="form-input" placeholder="🔍 ابحث عن اختبار..." style="max-width:300px">
-      <select id="filterType" class="form-input" style="max-width:150px">
-        <option value="">كل الأنواع</option>
-        <option value="tf">صح/خطأ فقط</option>
-        <option value="mc">اختيار متعدد فقط</option>
-      </select>
+    <h2 class="page-bar-title"><i class="fa-solid fa-bullseye" style="color: var(--accent); margin-left: 0.5rem;"></i> الاختبارات (<span id="quizCount"><%= quizzes.length %></span>)</h2>
+    <div class="search-filter-wrap" style="margin-top:0.75rem; position: relative; display: flex; align-items: center; gap: 0.75rem;">
+      <div style="position: relative; flex: 1; max-width: 300px;">
+        <i class="fa-solid fa-magnifying-glass" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: 0.88rem;"></i>
+        <input type="text" id="searchInput" class="form-input search-input-with-icon" placeholder="ابحث عن اختبار..." style="padding-right: 2.25rem;" title="ابحث عن اختبار بالاسم أو الوصف">
+      </div>
+      <div style="position: relative; max-width: 180px; flex: 1;">
+        <div class="custom-select-container" id="filterTypeSelect" style="width:100%">
+          <div class="custom-select-trigger" tabindex="0" role="combobox" aria-expanded="false" style="padding: 0.55rem 0.9rem;">
+            <span class="custom-select-value">كل الأنواع</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+          <div class="custom-select-options" role="listbox">
+            <div class="custom-select-option selected" data-value="" role="option">كل الأنواع</div>
+            <div class="custom-select-option" data-value="tf" role="option">صح/خطأ فقط</div>
+            <div class="custom-select-option" data-value="mc" role="option">اختيار متعدد فقط</div>
+          </div>
+        </div>
+        <input type="hidden" id="filterType" value="">
+      </div>
     </div>
   </div>
   <div style="display:flex;gap:0.5rem">
-    <button class="btn btn-secondary" onclick="openImportCSV()">📥 استيراد من CSV</button>
-    <a href="/admin/quizzes/new" class="btn btn-primary">➕ إضافة اختبار</a>
+    <button class="btn btn-secondary" onclick="openImportCSV()" title="استيراد وتوليد اختبار جديد من ملف CSV خارجي"><i class="fa-solid fa-file-import" style="margin-left:0.4rem"></i> استيراد من CSV</button>
+    <a href="/admin/quizzes/new" class="btn btn-primary" title="إنشاء اختبار تعليمي جديد يدوياً"><i class="fa-solid fa-plus" style="margin-left:0.4rem"></i> إضافة اختبار</a>
   </div>
 </div>
 
 <% if (quizzes.length === 0) { %>
 <div class="empty-state">
-  <div class="empty-icon">🎯</div>
+  <div class="empty-icon"><i class="fa-solid fa-folder-open" style="color: var(--text-dim);"></i></div>
   <h3>لا توجد اختبارات بعد</h3>
   <p>ابدأ بإضافة اختبارك الأول</p>
-  <a href="/admin/quizzes/new" class="btn btn-primary" style="margin-top:1rem">إضافة اختبار</a>
+  <a href="/admin/quizzes/new" class="btn btn-primary" style="margin-top:1rem"><i class="fa-solid fa-plus" style="margin-left:0.4rem"></i> إضافة اختبار</a>
 </div>
 <% } else { %>
 <div class="data-table-wrap">
@@ -45,7 +57,7 @@
       <tr class="quiz-row" data-quiz-id="<%= quiz.id %>" data-quiz-title="<%= quiz.title %>" data-has-tf="<%= tfCount > 0 %>" data-has-mc="<%= mcCount > 0 %>">
         <td>
           <div class="table-title-cell">
-            <span class="table-icon"><%= quiz.icon %></span>
+            <span class="table-icon"><i class="fa-solid fa-list-check" style="color: <%= quiz.color %>;"></i></span>
             <div>
               <div class="table-name"><%= quiz.title %></div>
               <div class="table-sub"><%= quiz.description %></div>
@@ -63,13 +75,13 @@
         </td>
         <td>
           <div class="action-btns">
-            <a href="/quiz/<%= quiz.id %>" target="_blank" class="action-btn action-view" title="عرض">👁️</a>
-            <a href="/admin/quizzes/<%= quiz.id %>/edit" class="action-btn action-edit" title="تعديل">✏️</a>
+            <a href="/quiz/<%= quiz.id %>" target="_blank" class="action-btn action-view" title="عرض"><i class="fa-solid fa-eye"></i></a>
+            <a href="/admin/quizzes/<%= quiz.id %>/edit" class="action-btn action-edit" title="تعديل"><i class="fa-solid fa-pen-to-square"></i></a>
             <form action="/admin/quizzes/<%= quiz.id %>/clone" method="POST" style="display:inline">
-              <button type="submit" class="action-btn action-clone" title="نسخ">📋</button>
+              <button type="submit" class="action-btn action-clone" title="نسخ"><i class="fa-solid fa-copy"></i></button>
             </form>
             <form action="/admin/quizzes/<%= quiz.id %>/delete" method="POST" style="display:inline" onsubmit="return confirmDelete('هل أنت متأكد من حذف هذا الاختبار؟')">
-              <button type="submit" class="action-btn action-delete" title="حذف">🗑️</button>
+              <button type="submit" class="action-btn action-delete" title="حذف"><i class="fa-solid fa-trash-can"></i></button>
             </form>
           </div>
         </td>
@@ -89,95 +101,434 @@
   <!-- Panel Header -->
   <div class="csv-panel-header">
     <div class="csv-header-title">
-      <span class="csv-header-icon">📥</span>
+      <i class="fa-solid fa-file-import csv-header-icon" style="font-size: 1.8rem; color: var(--accent);"></i>
       <div>
-        <h3>استيراد من CSV</h3>
-        <p>أضف أسئلتك بصيغة نصية سريعة</p>
+        <h3>منشئ ومستورد الاختبارات الذكي</h3>
+        <p>أضف أسئلتك بسهولة عبر الملفات أو النموذج التفاعلي</p>
       </div>
     </div>
-    <button class="csv-close-btn" onclick="closeImportCSV()">✕</button>
+    <button class="csv-close-btn" onclick="closeImportCSV()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+
+  <!-- Tab Switcher Navigation -->
+  <div class="csv-tab-nav">
+    <button class="csv-tab-btn active" id="tabGridBtn" onclick="switchCsvTab('grid')"><i class="fa-solid fa-list-check"></i> المنشئ التفاعلي (موصى به)</button>
+    <button class="csv-tab-btn" id="tabRawBtn" onclick="switchCsvTab('raw')"><i class="fa-solid fa-code"></i> استيراد CSV مباشر / ملف</button>
   </div>
 
   <!-- Panel Body: Guide + Form -->
   <div class="csv-panel-body">
 
-    <!-- Format Guide Card -->
-    <div class="csv-guide-card">
-      <div class="csv-guide-title">📋 صيغة الإدخال</div>
-
-      <div class="csv-format-block">
-        <div class="csv-format-label">✓ صح / خطأ</div>
-        <code class="csv-code">نوع | السؤال | صح أو خطأ | شرح</code>
-        <div class="csv-example">
-          <span class="ex-type">صح/خطأ</span><span class="ex-sep">|</span><span class="ex-q">الأرض كروية الشكل</span><span class="ex-sep">|</span><span class="ex-ans">صح</span><span class="ex-sep">|</span><span class="ex-exp">لأن...</span>
+    <!-- TAB 1: INTERACTIVE GRID BUILDER -->
+    <div id="tabGridContent" class="csv-tab-content active">
+      
+      <!-- AI PROMPT HELPER CARD -->
+      <div class="helper-card ai-helper-card" style="margin-bottom: 1.25rem;">
+        <div class="helper-card-header" onclick="toggleAiPrompt()">
+          <span><i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent);"></i> المساعد الذكي لتوليد الأسئلة بالذكاء الاصطناعي (ChatGPT / Claude)</span>
+          <i class="fa-solid fa-chevron-down" id="aiChevron"></i>
+        </div>
+        <div class="helper-card-body" id="aiPromptBody" style="display: none;">
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.6;">
+            انسخ هذا الأمر المجهز والصقه في ChatGPT أو Claude لتوليد أسئلة جاهزة للاستيراد فوراً:
+          </p>
+          <div style="position: relative;">
+            <textarea id="aiPromptText" class="form-textarea" style="font-size: 0.78rem; min-height: 110px; background: rgba(0,0,0,0.2); direction: rtl;" readonly>اكتب لي أسئلة اختبار حول موضوع [اكتب موضوعك هنا] باللغة العربية.
+يجب أن تكون الأسئلة منسقة بصيغة CSV تماماً باستخدام الرمز | كفاصل بالشكل التالي:
+- للصح والخطأ: صح/خطأ | نص السؤال | صح أو خطأ | شرح السؤال
+- للاختيار من متعدد: اختيار | نص السؤال | خيار 1 | خيار 2 | خيار 3 | خيار 4 | رقم الإجابة الصحيحة (من 1 إلى 4) | شرح السؤال
+مثال:
+اختيار|ما هي عاصمة مصر؟|القاهرة|الإسكندرية|الجيزة|أسوان|1|القاهرة هي عاصمة جمهورية مصر العربية وأكبر مدنها.
+صح/خطأ|الأرض كروية الشكل|صح|الأرض مفلطحة قليلاً عند القطبين ولكنها كروية الشكل إجمالاً.</textarea>
+            <button class="btn btn-sm btn-green" onclick="copyAiPrompt()" style="position: absolute; left: 10px; bottom: 10px; font-size: 0.72rem;">
+              <i class="fa-solid fa-copy" style="margin-left: 0.3rem;"></i> نسخ الأمر
+            </button>
+          </div>
         </div>
       </div>
 
-      <div class="csv-format-block">
-        <div class="csv-format-label">🎯 اختيار متعدد</div>
-        <code class="csv-code">نوع | السؤال | خيار1..4 | رقم الإجابة | شرح</code>
-        <div class="csv-example">
-          <span class="ex-type">اختيار</span><span class="ex-sep">|</span><span class="ex-q">عاصمة مصر</span><span class="ex-sep">|</span><span class="ex-opt">القاهرة</span><span class="ex-sep">|</span><span class="ex-opt">الإسكندرية</span><span class="ex-sep">|</span><span class="ex-opt">أسوان</span><span class="ex-sep">|</span><span class="ex-opt">الغردقة</span><span class="ex-sep">|</span><span class="ex-ans">1</span>
+      <!-- Quick interactive builder form -->
+      <div class="grid-builder-form" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem;">
+        <h4 style="font-size: 0.9rem; font-weight: 800; color: var(--text); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fa-solid fa-circle-plus" style="color: var(--accent);"></i> إضافة سؤال جديد للاختبار
+        </h4>
+        
+        <div class="form-group" style="margin-bottom: 0.85rem;">
+          <label class="form-label">نوع السؤال</label>
+          <div class="custom-select-container" id="qbTypeSelect" style="width:100%">
+            <div class="custom-select-trigger" tabindex="0" role="combobox" aria-expanded="false">
+              <span class="custom-select-value">🎯 اختيار متعدد (Multiple Choice)</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="custom-select-options" role="listbox">
+              <div class="custom-select-option selected" data-value="multiple" role="option" onclick="toggleQbFields('multiple')">🎯 اختيار متعدد (Multiple Choice)</div>
+              <div class="custom-select-option" data-value="truefalse" role="option" onclick="toggleQbFields('truefalse')">✓ صح / خطأ (True / False)</div>
+            </div>
+          </div>
+          <input type="hidden" id="qbType" value="multiple">
         </div>
-      </div>
 
-      <div class="csv-tips">
-        <div class="csv-tip">💡 الفاصل هو رمز الـ <strong>|</strong> بين كل حقل</div>
-        <div class="csv-tip">💡 الشرح والأيقونة واللون كلها اختيارية</div>
-        <div class="csv-tip">💡 يمكنك إضافة تعليق بوضع <strong>#</strong> في بداية السطر</div>
-      </div>
-    </div>
-
-    <!-- Form -->
-    <div class="csv-form">
-
-      <div class="form-group">
-        <label class="form-label">عنوان الاختبار <span class="req">*</span></label>
-        <input type="text" id="csvTitle" class="form-input" placeholder="مثال: اختبار الفيزياء - الفصل الأول">
-      </div>
-
-      <div class="form-group" style="flex:1;display:flex;flex-direction:column;">
-        <div class="csv-textarea-header">
-          <label class="form-label">بيانات الأسئلة <span class="req">*</span></label>
-          <span class="csv-line-count" id="csvLineCount">0 سطر</span>
+        <div class="form-group" style="margin-bottom: 0.85rem;">
+          <label class="form-label">نص السؤال</label>
+          <input type="text" id="qbQuestion" class="form-input" placeholder="اكتب سؤالك هنا...">
         </div>
-        <textarea id="csvData" class="form-textarea csv-textarea" rows="12"
-          placeholder="اكتب أسئلتك هنا، سطر لكل سؤال:
 
-صح/خطأ|الشمس نجم|صح|الشمس هي النجم الأقرب للأرض
-اختيار|كم كوكباً في المجموعة الشمسية|6|7|8|9|3"></textarea>
+        <!-- MC Fields -->
+        <div id="qbMcFields" class="form-group" style="margin-bottom: 0.85rem;">
+          <label class="form-label">الخيارات الأربعة وحدد الإجابة الصحيحة</label>
+          <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.25rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <input type="radio" name="qbCorrectMc" value="1" checked style="width:18px;height:18px;accent-color:var(--accent);cursor:pointer">
+              <input type="text" id="qbOpt1" class="form-input" placeholder="الخيار الأول (الصحيح افتراضياً)" style="font-size: 0.85rem;">
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <input type="radio" name="qbCorrectMc" value="2" style="width:18px;height:18px;accent-color:var(--accent);cursor:pointer">
+              <input type="text" id="qbOpt2" class="form-input" placeholder="الخيار الثاني" style="font-size: 0.85rem;">
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <input type="radio" name="qbCorrectMc" value="3" style="width:18px;height:18px;accent-color:var(--accent);cursor:pointer">
+              <input type="text" id="qbOpt3" class="form-input" placeholder="الخيار الثالث" style="font-size: 0.85rem;">
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <input type="radio" name="qbCorrectMc" value="4" style="width:18px;height:18px;accent-color:var(--accent);cursor:pointer">
+              <input type="text" id="qbOpt4" class="form-input" placeholder="الخيار الرابع" style="font-size: 0.85rem;">
+            </div>
+          </div>
+        </div>
+
+        <!-- TF Fields -->
+        <div id="qbTfFields" class="form-group" style="margin-bottom: 0.85rem; display: none;">
+          <label class="form-label">الإجابة الصحيحة</label>
+          <div class="custom-select-container" id="qbCorrectTfSelect" style="width:100%">
+            <div class="custom-select-trigger" tabindex="0" role="combobox" aria-expanded="false">
+              <span class="custom-select-value">✅ صح (True)</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="custom-select-options" role="listbox">
+              <div class="custom-select-option selected" data-value="صح" role="option">✅ صح (True)</div>
+              <div class="custom-select-option" data-value="خطأ" role="option">❌ خطأ (False)</div>
+            </div>
+          </div>
+          <input type="hidden" id="qbCorrectTf" value="صح">
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label">شرح الإجابة (اختياري)</label>
+          <input type="text" id="qbExplanation" class="form-input" placeholder="اكتب الشرح أو التبرير الذي يظهر للطالب...">
+        </div>
+
+        <button type="button" class="btn btn-primary btn-full" onclick="addQuestionFromBuilder()">
+          <i class="fa-solid fa-plus" style="margin-left: 0.4rem;"></i> أضف السؤال للاختبار
+        </button>
       </div>
 
-      <div class="csv-meta-row">
-        <div class="form-group" style="flex:1">
-          <label class="form-label">الأيقونة</label>
-          <input type="text" id="csvIcon" class="form-input" placeholder="📝" value="📝" maxlength="4" style="text-align:center;font-size:1.3rem">
+      <!-- Added Questions Preview -->
+      <div style="margin-top: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <h4 style="font-size: 0.9rem; font-weight: 800; color: var(--text-muted);">الأسئلة المضافة حالياً (<span id="qbCount">0</span>)</h4>
+          <button class="btn btn-sm btn-red" id="clearBuilderListBtn" onclick="clearBuilderQuestions()" style="display: none; padding: 0.25rem 0.6rem; font-size: 0.75rem;">
+            <i class="fa-solid fa-trash-can" style="margin-left: 0.3rem;"></i> مسح الكل
+          </button>
         </div>
-        <div class="form-group" style="flex:1">
-          <label class="form-label">اللون</label>
-          <div class="color-input-wrap">
-            <input type="color" id="csvColor" value="#00d4aa" class="color-picker">
-            <input type="text" id="csvColorText" class="form-input" value="#00d4aa" placeholder="#00d4aa" style="flex:1">
+        <div id="qbListContainer" style="display: flex; flex-direction: column; gap: 0.65rem; max-height: 250px; overflow-y: auto; padding: 2px;">
+          <div style="text-align: center; padding: 2rem 1rem; color: var(--text-dim); border: 1px dashed var(--border); border-radius: 8px; font-size: 0.82rem;">
+            <i class="fa-solid fa-square-poll-horizontal" style="font-size: 1.8rem; display: block; margin-bottom: 0.5rem; opacity: 0.5;"></i>
+            قم بتعبئة النموذج أعلاه والضغط على زر الإضافة لتجهيز الأسئلة هنا.
           </div>
         </div>
       </div>
 
     </div>
+
+    <!-- TAB 2: RAW CSV IMPORT -->
+    <div id="tabRawContent" class="csv-tab-content" style="display: none;">
+      
+      <!-- Format Guide Card -->
+      <div class="csv-guide-card" style="margin-bottom: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div class="csv-guide-title"><i class="fa-solid fa-circle-info"></i> صيغة الإدخال للنص والملفات</div>
+          <button class="btn btn-sm" onclick="loadSampleTemplateData()" style="font-size: 0.72rem; padding: 0.25rem 0.65rem; background: rgba(255,255,255,0.06);">
+            <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent);"></i> ملء نموذج تجريبي
+          </button>
+        </div>
+
+        <div class="csv-format-block">
+          <div class="csv-format-label"><i class="fa-solid fa-circle-check" style="color: var(--accent);"></i> صح / خطأ</div>
+          <code class="csv-code">صح/خطأ | السؤال | صح أو خطأ | شرح</code>
+          <div class="csv-example">
+            <span class="ex-type">صح/خطأ</span><span class="ex-sep">|</span><span class="ex-q">الأرض كروية الشكل</span><span class="ex-sep">|</span><span class="ex-ans">صح</span><span class="ex-sep">|</span><span class="ex-exp">لأنها...</span>
+          </div>
+        </div>
+
+        <div class="csv-format-block">
+          <div class="csv-format-label"><i class="fa-solid fa-circle-dot" style="color: var(--accent-3);"></i> اختيار متعدد</div>
+          <code class="csv-code">اختيار | السؤال | خيار1..4 | رقم الإجابة الصحيحة | شرح</code>
+          <div class="csv-example">
+            <span class="ex-type">اختيار</span><span class="ex-sep">|</span><span class="ex-q">عاصمة مصر</span><span class="ex-sep">|</span><span class="ex-opt">القاهرة</span><span class="ex-sep">|</span><span class="ex-opt">الإسكندرية</span><span class="ex-sep">|</span><span class="ex-opt">الجيزة</span><span class="ex-sep">|</span><span class="ex-opt">أسوان</span><span class="ex-sep">|</span><span class="ex-ans">1</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Drag & Drop Zone -->
+      <div class="csv-upload-zone" id="csvDropZone">
+        <input type="file" id="csvFileInput" accept=".csv,.txt" style="display: none;">
+        <span class="upload-icon"><i class="fa-solid fa-cloud-arrow-up" style="color: var(--accent);"></i></span>
+        <div class="upload-text">اسحب وأفلت ملف CSV هنا، أو <span class="upload-link">اختر ملفاً</span></div>
+        <div class="upload-subtext">يدعم ملفات .csv و .txt المنسقة بـ UTF-8 باستخدام فاصل الرأس |</div>
+      </div>
+
+      <!-- File Selected Badge -->
+      <div id="fileSelectedBadge" class="file-selected-badge" style="display: none;">
+        <span class="badge-file-icon"><i class="fa-solid fa-file-csv" style="color: var(--accent);"></i></span>
+        <span id="fileNameSpan" class="badge-file-name">file.csv</span>
+        <button type="button" class="badge-remove-btn" onclick="clearSelectedFile()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+    </div>
+
+    <!-- GLOBAL TITLE AND META (Always visible) -->
+    <div class="csv-global-fields" style="border-top: 1px solid var(--border); padding-top: 1.25rem; margin-top: 1.25rem;">
+      <div class="form-group" style="margin-bottom: 0.85rem;">
+        <label class="form-label">عنوان الاختبار <span class="req">*</span></label>
+        <input type="text" id="csvTitle" class="form-input" placeholder="مثال: اختبار الميكانيكا - أول ثانوي">
+      </div>
+
+      <div class="form-group" style="flex:1; display:none;" id="csvTextareaGroup">
+        <div class="csv-textarea-header">
+          <label class="form-label">بيانات الأسئلة (نص CSV المولد)</label>
+          <span class="csv-line-count" id="csvLineCount">0 سطر</span>
+        </div>
+        <textarea id="csvData" class="form-textarea csv-textarea" rows="8"
+          placeholder="اكتب أسئلتك هنا، سطر لكل سؤال..."></textarea>
+      </div>
+
+      <!-- Live Validation Error Box -->
+      <div id="csvValidationBox" class="csv-validation-box" style="display: none;">
+        <div class="validation-title"><i class="fa-solid fa-circle-exclamation"></i> مشاكل التنسيق المكتشفة:</div>
+        <ul id="csvErrorList" class="csv-error-list"></ul>
+      </div>
+
+      <input type="hidden" id="csvIcon" value="📝">
+      <div class="csv-meta-row">
+        <div class="form-group" style="flex:1">
+          <label class="form-label">اللون المميز للاختبار المستورد</label>
+          <div class="color-input-wrap">
+            <input type="color" id="csvColor" value="#38bdf8" class="color-picker" title="اختر لوناً مميزاً لبطاقة وجوانب هذا الاختبار المستورد">
+            <input type="text" id="csvColorText" class="form-input" value="#38bdf8" placeholder="#38bdf8" style="flex:1" title="رمز اللون ست عشري Hex (مثال: #38bdf8)">
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- Panel Footer -->
   <div class="csv-panel-footer">
     <div id="csvStatus" class="csv-status"></div>
     <div class="csv-footer-btns">
-      <button class="btn btn-outline" onclick="closeImportCSV()">إلغاء</button>
+      <button class="btn btn-outline" onclick="closeImportCSV()"><i class="fa-solid fa-xmark" style="margin-left: 0.3rem;"></i> إلغاء</button>
       <button class="btn btn-primary" id="csvImportBtn" onclick="importCSV()">
-        <span id="csvBtnText">✅ استيراد الأسئلة</span>
+        <span id="csvBtnText"><i class="fa-solid fa-cloud-arrow-down" style="margin-left: 0.4rem;"></i> استيراد الأسئلة</span>
       </button>
     </div>
   </div>
 </div>
 
 <script>
+// ── Tab Switching ──
+function switchCsvTab(tab) {
+  document.querySelectorAll('.csv-tab-btn').forEach(btn => btn.classList.remove('active'));
+  
+  if (tab === 'grid') {
+    document.getElementById('tabGridBtn').classList.add('active');
+    document.getElementById('tabGridContent').style.display = 'block';
+    document.getElementById('tabRawContent').style.display = 'none';
+    document.getElementById('csvTextareaGroup').style.display = 'none';
+  } else {
+    document.getElementById('tabRawBtn').classList.add('active');
+    document.getElementById('tabGridContent').style.display = 'none';
+    document.getElementById('tabRawContent').style.display = 'block';
+    document.getElementById('csvTextareaGroup').style.display = 'flex';
+  }
+}
+
+// ── AI Prompt Toggle ──
+function toggleAiPrompt() {
+  const panel = document.getElementById('aiPromptBody');
+  const chevron = document.getElementById('aiChevron');
+  if (panel.style.display === 'none') {
+    panel.style.display = 'block';
+    chevron.className = 'fa-solid fa-chevron-up';
+  } else {
+    panel.style.display = 'none';
+    chevron.className = 'fa-solid fa-chevron-down';
+  }
+}
+
+// ── Copy AI Prompt ──
+function copyAiPrompt() {
+  const textarea = document.getElementById('aiPromptText');
+  textarea.select();
+  document.execCommand('copy');
+  
+  const btn = document.querySelector('.ai-helper-card .btn');
+  const originalHtml = btn.innerHTML;
+  btn.innerHTML = '<i class="fa-solid fa-check" style="margin-left: 0.3rem;"></i> تم النسخ!';
+  btn.classList.remove('btn-green');
+  btn.style.background = 'var(--accent)';
+  btn.style.color = '#000';
+  setTimeout(() => {
+    btn.innerHTML = originalHtml;
+    btn.style.background = '';
+    btn.style.color = '';
+    btn.classList.add('btn-green');
+  }, 1500);
+}
+
+// ── Toggle Builder Fields ──
+function toggleQbFields(type) {
+  // type can come from the custom select option onclick, or read from hidden input
+  if (!type) type = document.getElementById('qbType').value;
+  // Update hidden input
+  const hiddenInput = document.getElementById('qbType');
+  if (hiddenInput) hiddenInput.value = type;
+  if (type === 'multiple') {
+    document.getElementById('qbMcFields').style.display = 'block';
+    document.getElementById('qbTfFields').style.display = 'none';
+  } else {
+    document.getElementById('qbMcFields').style.display = 'none';
+    document.getElementById('qbTfFields').style.display = 'block';
+  }
+}
+
+// ── Interactive Builder Questions List ──
+let builderQuestions = [];
+
+function addQuestionFromBuilder() {
+  const type = document.getElementById('qbType').value;
+  const question = document.getElementById('qbQuestion').value.trim();
+  const explanation = document.getElementById('qbExplanation').value.trim();
+  
+  if (!question) {
+    alert('يرجى كتابة نص السؤال');
+    document.getElementById('qbQuestion').focus();
+    return;
+  }
+  
+  let csvLine = '';
+  
+  if (type === 'truefalse') {
+    const correctVal = document.getElementById('qbCorrectTf').value;
+    csvLine = `صح/خطأ|${question}|${correctVal}|${explanation}`;
+  } else {
+    const opt1 = document.getElementById('qbOpt1').value.trim();
+    const opt2 = document.getElementById('qbOpt2').value.trim();
+    const opt3 = document.getElementById('qbOpt3').value.trim();
+    const opt4 = document.getElementById('qbOpt4').value.trim();
+    
+    if (!opt1 || !opt2) {
+      alert('يرجى تعبئة خيارين على الأقل لسؤال الاختيار المتعدد');
+      return;
+    }
+    
+    const correctRadio = document.querySelector('input[name="qbCorrectMc"]:checked');
+    const correctIdx = correctRadio ? correctRadio.value : '1';
+    
+    const opts = [opt1, opt2];
+    if (opt3) opts.push(opt3);
+    if (opt4) opts.push(opt4);
+    
+    csvLine = `اختيار|${question}|${opts.join('|')}|${correctIdx}|${explanation}`;
+  }
+  
+  builderQuestions.push({
+    line: csvLine,
+    question: question,
+    type: type
+  });
+  
+  syncBuilderToTextarea();
+  renderBuilderList();
+  
+  // Clear inputs
+  document.getElementById('qbQuestion').value = '';
+  document.getElementById('qbExplanation').value = '';
+  document.getElementById('qbOpt1').value = '';
+  document.getElementById('qbOpt2').value = '';
+  document.getElementById('qbOpt3').value = '';
+  document.getElementById('qbOpt4').value = '';
+}
+
+function syncBuilderToTextarea() {
+  const csvLines = builderQuestions.map(q => q.line);
+  document.getElementById('csvData').value = csvLines.join('\n');
+  validateCSVContent(csvLines.join('\n'));
+}
+
+function renderBuilderList() {
+  const container = document.getElementById('qbListContainer');
+  const countEl = document.getElementById('qbCount');
+  const clearBtn = document.getElementById('clearBuilderListBtn');
+  
+  countEl.textContent = builderQuestions.length;
+  
+  if (builderQuestions.length === 0) {
+    clearBtn.style.display = 'none';
+    container.innerHTML = `
+      <div style="text-align: center; padding: 2rem 1rem; color: var(--text-dim); border: 1px dashed var(--border); border-radius: 8px; font-size: 0.82rem;">
+        <i class="fa-solid fa-square-poll-horizontal" style="font-size: 1.8rem; display: block; margin-bottom: 0.5rem; opacity: 0.5;"></i>
+        قم بتعبئة النموذج أعلاه والضغط على زر الإضافة لتجهيز الأسئلة هنا.
+      </div>
+    `;
+    return;
+  }
+  
+  clearBtn.style.display = 'inline-block';
+  
+  container.innerHTML = builderQuestions.map((q, idx) => `
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 0.85rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 8px;">
+      <div style="min-width: 0; flex: 1; text-align: right;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: flex-start;">
+          <span style="font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.4rem; border-radius: 4px; background: ${q.type === 'multiple' ? 'color-mix(in srgb, var(--accent-2) 12%, transparent)' : 'color-mix(in srgb, var(--accent) 12%, transparent)'}; color: ${q.type === 'multiple' ? 'var(--accent-2)' : 'var(--accent)'}">
+            ${q.type === 'multiple' ? 'اختيار متعدد' : 'صح/خطأ'}
+          </span>
+          <span style="font-size: 0.85rem; font-weight: 700; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 320px;">
+            ${q.question}
+          </span>
+        </div>
+      </div>
+      <button class="btn btn-sm btn-red" onclick="deleteBuilderQuestion(${idx})" style="padding: 0.2rem 0.4rem; font-size: 0.72rem; width:26px; height:26px; display:flex; align-items:center; justify-content:center; flex-shrink: 0;">
+        <i class="fa-solid fa-trash-can"></i>
+      </button>
+    </div>
+  `).join('');
+}
+
+function deleteBuilderQuestion(idx) {
+  builderQuestions.splice(idx, 1);
+  syncBuilderToTextarea();
+  renderBuilderList();
+}
+
+function clearBuilderQuestions() {
+  if (confirm('هل أنت متأكد من مسح جميع الأسئلة المجهزة؟')) {
+    builderQuestions = [];
+    syncBuilderToTextarea();
+    renderBuilderList();
+  }
+}
+
+// ── Load Sample Template ──
+function loadSampleTemplateData() {
+  const sample = `# نموذج أسئلة تجريبي متوافق مع المنصة
+صح/خطأ | تدور الأرض حول الشمس | صح | هذه حقيقة فلكية مثبتة.
+اختيار | كم كوكباً في المجموعة الشمسية؟ | ستة كواكب | سبعة كواكب | ثمانية كواكب | تسعة كواكب | 3 | بعد استبعاد بلوتو أصبح العدد ثمانية.
+صح/خطأ | سور الصين العظيم هو المعلم الوحيد الذي يرى من الفضاء | خطأ | هذه إشاعة غير صحيحة علمياً.`;
+  
+  document.getElementById('csvData').value = sample;
+  validateCSVContent(sample);
+}
+
 // ── CSV Panel open/close ──
 function openImportCSV() {
   document.getElementById('csvOverlay').classList.add('active');
@@ -191,11 +542,170 @@ function closeImportCSV() {
   document.body.style.overflow = '';
 }
 
-// Live line counter
+// ── File Drag and Drop listeners ──
+const dropZone = document.getElementById('csvDropZone');
+const fileInput = document.getElementById('csvFileInput');
+
+if (dropZone && fileInput) {
+  dropZone.addEventListener('click', () => fileInput.click());
+
+  dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('dragover');
+  });
+
+  dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('dragover');
+  });
+
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) {
+      fileInput.files = e.dataTransfer.files;
+      handleFileSelect();
+    }
+  });
+
+  fileInput.addEventListener('change', handleFileSelect);
+}
+
+function handleFileSelect() {
+  const file = fileInput.files[0];
+  if (!file) return;
+
+  document.getElementById('fileNameSpan').textContent = file.name;
+  document.getElementById('fileSelectedBadge').style.display = 'flex';
+  document.getElementById('csvDropZone').style.display = 'none';
+
+  const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.'));
+  const titleInput = document.getElementById('csvTitle');
+  if (!titleInput.value.trim()) {
+    titleInput.value = nameWithoutExt;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const text = e.target.result;
+    document.getElementById('csvData').value = text;
+    validateCSVContent(text);
+  };
+  reader.readAsText(file);
+}
+
+function clearSelectedFile() {
+  fileInput.value = '';
+  document.getElementById('fileSelectedBadge').style.display = 'none';
+  document.getElementById('csvDropZone').style.display = 'flex';
+  document.getElementById('csvData').value = '';
+  document.getElementById('csvLineCount').textContent = '0 سطر';
+  document.getElementById('csvValidationBox').style.display = 'none';
+  document.getElementById('csvImportBtn').disabled = false;
+  document.getElementById('csvBtnText').innerHTML = '<i class="fa-solid fa-cloud-arrow-down" style="margin-left: 0.4rem;"></i> استيراد الأسئلة';
+  document.getElementById('csvStatus').className = 'csv-status';
+  document.getElementById('csvStatus').textContent = '';
+}
+
+// Live line counter & validation
 document.getElementById('csvData').addEventListener('input', function () {
-  const lines = this.value.split('\n').filter(l => l.trim() && !l.trim().startsWith('#'));
+  const text = this.value;
+  const lines = text.split('\n').filter(l => l.trim() && !l.trim().startsWith('#'));
   document.getElementById('csvLineCount').textContent = lines.length + ' سطر';
+  validateCSVContent(text);
 });
+
+function validateCSVContent(text) {
+  const lines = text.split('\n');
+  const errors = [];
+  const seenQuestions = new Set();
+
+  for (let i = 0; i < lines.length; i++) {
+    const lineNum = i + 1;
+    const line = lines[i].trim();
+    if (!line || line.startsWith('#')) continue;
+
+    const parts = line.split('|').map(p => p.trim());
+    if (parts.length < 3) {
+      errors.push(`السطر ${lineNum}: التنسيق خاطئ (يحتاج 3 حقول مفصولة بـ '|' على الأقل)`);
+      continue;
+    }
+
+    const typePart = parts[0].toLowerCase();
+    const isTrueFalse = typePart.includes('صح') || typePart.includes('true') || typePart.includes('tf');
+    const isMultiple = typePart.includes('اختيار') || typePart.includes('multiple') || typePart.includes('mc');
+
+    if (!isTrueFalse && !isMultiple) {
+      errors.push(`السطر ${lineNum}: نوع السؤال غير معروف "${parts[0]}" (استخدم "صح/خطأ" أو "اختيار")`);
+      continue;
+    }
+
+    const question = parts[1];
+    if (!question) {
+      errors.push(`السطر ${lineNum}: نص السؤال فارغ`);
+      continue;
+    }
+
+    const normQuestion = question.toLowerCase().replace(/\s+/g, ' ');
+    if (seenQuestions.has(normQuestion)) {
+      errors.push(`السطر ${lineNum}: تكرار للسؤال: "${question.substring(0, 25)}..."`);
+    } else {
+      seenQuestions.add(normQuestion);
+    }
+
+    if (isTrueFalse) {
+      const answerRaw = (parts[2] || '').toLowerCase();
+      if (answerRaw !== 'صح' && answerRaw !== 'خطأ' && answerRaw !== 'true' && answerRaw !== 'false') {
+        errors.push(`السطر ${lineNum}: إجابة الصح والخطأ غير صالحة "${parts[2]}" (يجب أن تكون "صح" أو "خطأ")`);
+      }
+    } else {
+      if (parts.length < 5) {
+        errors.push(`السطر ${lineNum}: سؤال الاختيار يحتاج خيارين على الأقل ورقم إجابة صحيح`);
+        continue;
+      }
+
+      let optionEnd = parts.length - 1;
+      if (isNaN(parts[parts.length - 1]) && parts.length >= 5) {
+        optionEnd = parts.length - 2;
+      }
+
+      const answerPart = parts[optionEnd];
+      if (isNaN(answerPart) || answerPart.trim() === '') {
+        errors.push(`السطر ${lineNum}: مؤشر الإجابة الصحيحة يجب أن يكون رقماً صالحاً`);
+        continue;
+      }
+
+      const answerIdx = parseInt(answerPart, 10) - 1;
+      optionEnd -= 1;
+
+      const options = parts.slice(2, optionEnd + 1).filter(o => o.trim());
+      if (options.length < 2) {
+        errors.push(`السطر ${lineNum}: يجب توفير خيارين غير فارغين على الأقل`);
+        continue;
+      }
+
+      if (answerIdx < 0 || answerIdx >= options.length) {
+        errors.push(`السطر ${lineNum}: رقم الإجابة (${answerIdx + 1}) غير صالح (يجب أن يكون بين 1 و ${options.length})`);
+      }
+    }
+  }
+
+  const validationBox = document.getElementById('csvValidationBox');
+  const errorList = document.getElementById('csvErrorList');
+  const importBtn = document.getElementById('csvImportBtn');
+  const btnText = document.getElementById('csvBtnText');
+
+  if (errors.length > 0) {
+    errorList.innerHTML = errors.map(err => `<li>${err}</li>`).join('');
+    validationBox.style.display = 'block';
+    importBtn.disabled = true;
+    btnText.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> يرجى تصحيح الأخطاء';
+  } else {
+    validationBox.style.display = 'none';
+    errorList.innerHTML = '';
+    importBtn.disabled = false;
+    btnText.innerHTML = '<i class="fa-solid fa-cloud-arrow-down" style="margin-left: 0.4rem;"></i> استيراد الأسئلة';
+  }
+}
 
 // Color sync
 document.getElementById('csvColor').addEventListener('input', function () {
@@ -231,7 +741,7 @@ async function importCSV() {
     return;
   }
 
-  btnText.textContent = '⏳ جاري الاستيراد...';
+  btnText.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-left: 0.4rem;"></i> جاري الاستيراد...';
   document.getElementById('csvImportBtn').disabled = true;
 
   try {
@@ -250,14 +760,59 @@ async function importCSV() {
   } catch (err) {
     statusEl.className = 'csv-status error';
     statusEl.textContent = '❌ ' + err.message;
-    btnText.textContent = '✅ استيراد الأسئلة';
+    btnText.innerHTML = '<i class="fa-solid fa-cloud-arrow-down" style="margin-left: 0.4rem;"></i> استيراد الأسئلة';
     document.getElementById('csvImportBtn').disabled = false;
   }
 }
 
-// Search & Filter
+// Search & Filter — reads from hidden #filterType input
 document.getElementById('searchInput').addEventListener('input', filterQuizzes);
-document.getElementById('filterType').addEventListener('change', filterQuizzes);
+
+// Wire custom selects that need side-effects after main.js initCustomSelects runs
+// Use a setTimeout(0) to always run AFTER initCustomSelects() in main.js
+setTimeout(() => {
+  // ── filterTypeSelect → run filterQuizzes on each selection
+  const filterContainer = document.getElementById('filterTypeSelect');
+  if (filterContainer) {
+    filterContainer.querySelectorAll('.custom-select-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        // Wait a tick so main.js selectOption runs first and updates the hidden input
+        setTimeout(() => {
+          const val = opt.dataset.value;
+          document.getElementById('filterType').value = val;
+          filterQuizzes();
+        }, 0);
+      });
+    });
+  }
+
+  // ── qbTypeSelect → toggle builder fields on type change
+  const qbTypeContainer = document.getElementById('qbTypeSelect');
+  if (qbTypeContainer) {
+    qbTypeContainer.querySelectorAll('.custom-select-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        setTimeout(() => {
+          document.getElementById('qbType').value = opt.dataset.value;
+          toggleQbFields(opt.dataset.value);
+        }, 0);
+      });
+    });
+  }
+
+  // ── qbCorrectTfSelect → sync hidden input
+  const tfContainer = document.getElementById('qbCorrectTfSelect');
+  if (tfContainer) {
+    tfContainer.querySelectorAll('.custom-select-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        setTimeout(() => {
+          document.getElementById('qbCorrectTf').value = opt.dataset.value;
+        }, 0);
+      });
+    });
+  }
+}, 0);
+
+
 
 function filterQuizzes() {
   const search = document.getElementById('searchInput').value.toLowerCase();
@@ -304,8 +859,8 @@ function filterQuizzes() {
   top: 0; left: 0;
   width: min(560px, 98vw);
   height: 100vh;
-  background: #0d1228;
-  border-right: 1px solid #1c2a45;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border);
   z-index: 901;
   display: flex;
   flex-direction: column;
@@ -324,7 +879,7 @@ function filterQuizzes() {
   align-items: center;
   justify-content: space-between;
   padding: 1.5rem 1.75rem;
-  border-bottom: 1px solid #1c2a45;
+  border-bottom: 1px solid var(--border);
   background: rgba(0,212,170,0.04);
   flex-shrink: 0;
 }
@@ -340,18 +895,18 @@ function filterQuizzes() {
 .csv-header-title h3 {
   font-size: 1.1rem;
   font-weight: 800;
-  color: #eef2fc;
+  color: var(--text);
   margin: 0 0 0.15rem;
 }
 .csv-header-title p {
   font-size: 0.82rem;
-  color: #8a9bbf;
+  color: var(--text-muted);
   margin: 0;
 }
 .csv-close-btn {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid #1c2a45;
-  color: #8a9bbf;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
   width: 34px; height: 34px;
   border-radius: 8px;
   font-size: 1rem;
@@ -359,7 +914,7 @@ function filterQuizzes() {
   transition: all 0.2s;
   display: flex; align-items: center; justify-content: center;
 }
-.csv-close-btn:hover { background: rgba(255,107,107,0.12); color: #ff6b6b; border-color: rgba(255,107,107,0.3); }
+.csv-close-btn:hover { background: color-mix(in srgb, var(--accent-2) 12%, transparent); color: var(--accent-2); border-color: color-mix(in srgb, var(--accent-2) 30%, transparent); }
 
 /* Body */
 .csv-panel-body {
@@ -373,8 +928,8 @@ function filterQuizzes() {
 
 /* Format Guide */
 .csv-guide-card {
-  background: rgba(255,255,255,0.02);
-  border: 1px solid #1c2a45;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.25rem;
   display: flex;
@@ -386,7 +941,7 @@ function filterQuizzes() {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #4a5a7a;
+  color: var(--text-muted);
 }
 .csv-format-block {
   display: flex;
@@ -396,17 +951,17 @@ function filterQuizzes() {
 .csv-format-label {
   font-size: 0.8rem;
   font-weight: 700;
-  color: #8a9bbf;
+  color: var(--text-muted);
 }
 .csv-code {
   display: block;
   font-family: 'Courier New', monospace;
   font-size: 0.78rem;
-  background: rgba(0,212,170,0.07);
-  border: 1px solid rgba(0,212,170,0.18);
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
   border-radius: 6px;
   padding: 0.45rem 0.75rem;
-  color: #00d4aa;
+  color: var(--accent);
   direction: ltr;
   text-align: left;
 }
@@ -418,30 +973,30 @@ function filterQuizzes() {
   direction: ltr;
   align-items: center;
   padding: 0.35rem 0.5rem;
-  background: rgba(255,255,255,0.02);
+  background: var(--bg-card);
   border-radius: 6px;
-  border: 1px solid #1c2a45;
+  border: 1px solid var(--border);
   line-height: 1.6;
 }
-.ex-type  { color: #a78bfa; font-weight: 700; }
-.ex-sep   { color: #4a5a7a; padding: 0 2px; }
-.ex-q     { color: #eef2fc; }
-.ex-ans   { color: #00d4aa; font-weight: 700; }
-.ex-opt   { color: #8a9bbf; }
-.ex-exp   { color: #5a6b8a; font-style: italic; }
+.ex-type  { color: var(--accent-3); font-weight: 700; }
+.ex-sep   { color: var(--text-dim); padding: 0 2px; }
+.ex-q     { color: var(--text); }
+.ex-ans   { color: var(--accent); font-weight: 700; }
+.ex-opt   { color: var(--text-muted); }
+.ex-exp   { color: var(--text-dim); font-style: italic; }
 
 .csv-tips {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  border-top: 1px solid #1c2a45;
+  border-top: 1px solid var(--border);
   padding-top: 0.85rem;
 }
 .csv-tip {
   font-size: 0.8rem;
-  color: #5a6b8a;
+  color: var(--text-muted);
 }
-.csv-tip strong { color: #8a9bbf; }
+.csv-tip strong { color: var(--text); }
 
 /* Form */
 .csv-form {
@@ -450,7 +1005,7 @@ function filterQuizzes() {
   gap: 1rem;
   flex: 1;
 }
-.req { color: #ff6b6b; }
+.req { color: var(--accent-2); }
 
 .csv-textarea-header {
   display: flex;
@@ -460,12 +1015,12 @@ function filterQuizzes() {
 }
 .csv-line-count {
   font-size: 0.75rem;
-  color: #4a5a7a;
+  color: var(--text-muted);
   font-weight: 600;
-  background: rgba(255,255,255,0.04);
+  background: var(--bg-2);
   padding: 0.2rem 0.6rem;
   border-radius: 100px;
-  border: 1px solid #1c2a45;
+  border: 1px solid var(--border);
   transition: all 0.2s;
 }
 .csv-textarea {
@@ -487,13 +1042,13 @@ function filterQuizzes() {
 /* Footer */
 .csv-panel-footer {
   padding: 1.25rem 1.75rem;
-  border-top: 1px solid #1c2a45;
+  border-top: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
   flex-shrink: 0;
-  background: rgba(0,0,0,0.2);
+  background: var(--bg-2);
 }
 .csv-footer-btns {
   display: flex;
@@ -504,7 +1059,198 @@ function filterQuizzes() {
   font-weight: 600;
   flex: 1;
 }
-.csv-status.error   { color: #ff6b6b; }
-.csv-status.success { color: #00d4aa; }
+.csv-status.error   { color: var(--accent-2); }
+.csv-status.success { color: var(--accent); }
+
+/* ── CSV Upload Zone ── */
+.csv-upload-zone {
+  border: 2px dashed color-mix(in srgb, var(--border-light) 60%, var(--border));
+  border-radius: 12px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  background: rgba(255,255,255,0.01);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+.csv-upload-zone:hover, .csv-upload-zone.dragover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+}
+.upload-icon {
+  font-size: 2.2rem;
+  filter: drop-shadow(0 4px 12px rgba(0,212,170,0.2));
+}
+.upload-text {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.upload-link {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.upload-subtext {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.file-selected-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(0,212,170,0.08);
+  border: 1px solid rgba(0,212,170,0.2);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.badge-file-icon {
+  font-size: 1.1rem;
+}
+.badge-file-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  flex: 1;
+}
+.badge-remove-btn {
+  background: none;
+  border: none;
+  color: var(--accent-2);
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+}
+.badge-remove-btn:hover {
+  background: color-mix(in srgb, var(--accent-2) 10%, transparent);
+}
+
+/* ── CSV Live Validation ── */
+.csv-validation-box {
+  background: color-mix(in srgb, var(--accent-2) 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-2) 20%, transparent);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+.validation-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent-2);
+  margin-bottom: 0.5rem;
+}
+.csv-error-list {
+  margin: 0;
+  padding-right: 1.25rem;
+  color: color-mix(in srgb, var(--accent-2) 80%, white);
+  font-size: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+/* ── CSV Tabbed Switcher & Grid Builder Styles ── */
+.csv-tab-nav {
+  display: flex;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--border);
+  padding: 0.5rem 1.75rem 0;
+  gap: 0.5rem;
+}
+.csv-tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--text-dim);
+  padding: 0.65rem 1.25rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: inherit;
+  transition: all 0.22s ease;
+}
+.csv-tab-btn:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.02);
+}
+.csv-tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.csv-tab-content {
+  display: none;
+}
+.csv-tab-content.active {
+  display: block;
+}
+
+/* Helper Cards */
+.helper-card {
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.25s ease;
+}
+.helper-card:hover {
+  border-color: rgba(0, 212, 170, 0.2);
+}
+.helper-card-header {
+  padding: 0.75rem 1rem;
+  background: rgba(0, 212, 170, 0.03);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+.helper-card-body {
+  padding: 1rem;
+  border-top: 1px solid var(--border);
+}
+.btn-sm {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
+  border-radius: 6px;
+}
+.btn-green {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.btn-green:hover {
+  background: var(--accent);
+  color: var(--btn-text-color);
+  border-color: var(--accent);
+}
+.btn-red {
+  background: color-mix(in srgb, var(--accent-2) 15%, transparent);
+  color: var(--accent-2);
+  border: 1px solid color-mix(in srgb, var(--accent-2) 30%, transparent);
+}
+.btn-red:hover {
+  background: var(--accent-2);
+  color: #fff;
+  border-color: var(--accent-2);
+}
+.btn-full {
+  width: 100%;
+  justify-content: center;
+}
+.grid-builder-form input.form-input {
+  font-size: 0.88rem;
+}
 </style>
 
+<%- include('partials/layout-bottom') %>

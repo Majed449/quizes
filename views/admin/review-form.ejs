@@ -1,43 +1,41 @@
 <%- include('partials/layout-top', { activePage: 'reviews' }) %>
 
 <div class="page-actions-bar">
-  <h2 class="page-bar-title"><%= mode === 'create' ? '➕ مراجعة جديدة' : '✏️ تعديل المراجعة' %></h2>
-  <a href="/admin/reviews" class="btn-sm">← العودة</a>
+  <h2 class="page-bar-title"><%- mode === 'create' ? '<i class="fa-solid fa-circle-plus" style="color: var(--accent); margin-left: 0.5rem;"></i> مراجعة جديدة' : '<i class="fa-solid fa-pen-to-square" style="color: var(--accent); margin-left: 0.5rem;"></i> تعديل المراجعة' %></h2>
+  <a href="/admin/reviews" class="btn-sm" style="display: flex; align-items: center; gap: 0.4rem;"><i class="fa-solid fa-arrow-right"></i> العودة</a>
 </div>
 
 <form id="reviewForm" action="<%= mode === 'create' ? '/admin/reviews' : '/admin/reviews/' + review.id %>" method="POST">
 
   <!-- Review Meta -->
   <div class="section-card">
-    <div class="section-card-header"><h3>📋 معلومات المراجعة</h3></div>
+    <div class="section-card-header"><h3><i class="fa-solid fa-circle-info" style="color: var(--accent); margin-left: 0.5rem;"></i> معلومات المراجعة</h3></div>
     <div class="form-grid">
       <div class="form-group">
         <label class="form-label">عنوان المراجعة *</label>
         <input type="text" name="title" class="form-input" required
-               value="<%= review ? review.title : '' %>" placeholder="مثال: مراجعة الفيزياء الشاملة">
+               value="<%= review ? review.title : '' %>" placeholder="مثال: مراجعة الفيزياء الشاملة" title="أدخل عنوان المراجعة (مثال: مراجعة الفيزياء العامة)">
       </div>
       <div class="form-group">
         <label class="form-label">المادة الدراسية *</label>
         <input type="text" name="subject" class="form-input" required
-               value="<%= review ? review.subject : '' %>" placeholder="مثال: الفيزياء">
+               value="<%= review ? review.subject : '' %>" placeholder="مثال: الفيزياء" title="أدخل اسم المادة التعليمية (مثال: الرياضيات)">
       </div>
       <div class="form-group">
         <label class="form-label">الوصف</label>
         <input type="text" name="description" class="form-input"
-               value="<%= review ? review.description : '' %>" placeholder="وصف مختصر">
+               value="<%= review ? review.description : '' %>" placeholder="وصف مختصر" title="أدخل تفاصيل إضافية حول موضوع هذه المراجعة">
       </div>
+      <!-- Hidden icon input as user doesn't need to specify it manually -->
+      <input type="hidden" name="icon" value="<%= review ? review.icon : '📚' %>">
+
       <div class="form-group">
-        <label class="form-label">الأيقونة</label>
-        <input type="text" name="icon" class="form-input icon-input"
-               value="<%= review ? review.icon : '📚' %>" maxlength="4">
-      </div>
-      <div class="form-group">
-        <label class="form-label">اللون</label>
+        <label class="form-label">اللون المميز</label>
         <div class="color-input-wrap">
           <input type="color" name="color" id="colorPicker" class="color-picker"
-                 value="<%= review ? review.color : '#00d4aa' %>">
+                 value="<%= review ? review.color : '#38bdf8' %>" title="اختر لوناً مميزاً للمراجعة">
           <input type="text" id="colorText" class="form-input" style="flex:1"
-                 value="<%= review ? review.color : '#00d4aa' %>" placeholder="#00d4aa">
+                 value="<%= review ? review.color : '#38bdf8' %>" placeholder="#38bdf8" title="أدخل قيمة اللون بنظام Hex (مثال: #38bdf8)">
         </div>
       </div>
     </div>
@@ -46,13 +44,14 @@
   <!-- Sections Builder -->
   <div class="section-card">
     <div class="section-card-header">
-      <h3>📂 الأقسام (<span id="sectionCount">0</span>)</h3>
-      <button type="button" class="btn-sm btn-green" onclick="addSection()">➕ إضافة قسم</button>
+      <h3><i class="fa-solid fa-folder-open" style="color: var(--accent); margin-left: 0.5rem;"></i> الأقسام (<span id="sectionCount">0</span>)</h3>
+      <button type="button" class="btn-sm btn-green" onclick="addSection()" title="إضافة قسم شرح أو تلخيص جديد للمراجعة"><i class="fa-solid fa-plus" style="margin-left: 0.3rem;"></i> إضافة قسم</button>
     </div>
 
     <div id="sectionsBuilder" class="sections-builder">
       <div class="questions-empty" id="emptyMsg">
-        <span>📂</span> لم تضف أي أقسام بعد — اضغط على "إضافة قسم" للبدء
+        <i class="fa-solid fa-folder-open" style="font-size: 2rem; display: block; margin-bottom: 0.75rem; color: var(--text-dim);"></i>
+        لم تضف أي أقسام بعد — اضغط على "إضافة قسم" للبدء
       </div>
     </div>
   </div>
@@ -60,9 +59,11 @@
   <input type="hidden" name="sections" id="sectionsInput">
 
   <div class="form-actions">
-    <a href="/admin/reviews" class="btn btn-outline">إلغاء</a>
-    <button type="submit" class="btn btn-primary" onclick="return prepareSubmit()">
-      <%= mode === 'create' ? '✅ إنشاء المراجعة' : '💾 حفظ التعديلات' %>
+    <a href="/admin/reviews" class="btn btn-outline" title="إلغاء والتراجع والعودة إلى القائمة"><i class="fa-solid fa-xmark" style="margin-left: 0.3rem;"></i> إلغاء</a>
+    <button type="submit" class="btn btn-primary" onclick="return prepareSubmit()" title="حفظ جميع التعديلات والأقسام المضافة الحالية">
+      <span id="submitBtnLabel">
+        <%- mode === 'create' ? '<i class="fa-solid fa-circle-plus" style="margin-left: 0.4rem;"></i> إنشاء المراجعة' : '<i class="fa-solid fa-floppy-disk" style="margin-left: 0.4rem;"></i> حفظ التعديلات' %>
+      </span>
     </button>
   </div>
 </form>

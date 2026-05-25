@@ -1,38 +1,107 @@
 <%- include('partials/layout-top', { activePage: 'settings' }) %>
 
+<style>
+  .toggle-switch-label {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 26px;
+    flex-shrink: 0;
+  }
+  .toggle-switch-label input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 30px;
+  }
+  .toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--text-muted);
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 50%;
+  }
+  .toggle-switch-label input:checked + .toggle-slider {
+    background-color: color-mix(in srgb, var(--accent) 20%, transparent);
+    border-color: var(--accent);
+  }
+  .toggle-switch-label input:checked + .toggle-slider:before {
+    transform: translateX(22px);
+    background-color: var(--accent);
+  }
+</style>
+
 <div class="page-actions-bar">
-  <h2 class="page-bar-title">⚙️ الإعدادات</h2>
+  <h2 class="page-bar-title"><i class="fa-solid fa-sliders" style="color: var(--accent); margin-left: 0.5rem;"></i> الإعدادات</h2>
+</div>
+
+<% if (error) { %>
+<div class="alert alert-error" style="margin-bottom:1.25rem; display: flex; align-items: center; gap: 0.5rem; max-width:520px">
+  <i class="fa-solid fa-triangle-exclamation"></i>
+  <span><%= error %></span>
+</div>
+<% } %>
+<% if (success) { %>
+<div class="alert alert-success" style="margin-bottom:1.25rem; display: flex; align-items: center; gap: 0.5rem; max-width:520px">
+  <i class="fa-solid fa-circle-check"></i>
+  <span><%= success %></span>
+</div>
+<% } %>
+
+<div class="section-card" style="max-width:520px; margin-bottom: 1.5rem;">
+  <div class="section-card-header">
+    <h3><i class="fa-solid fa-gears" style="color: var(--accent); margin-left: 0.5rem;"></i> الإعدادات العامة للنظام</h3>
+  </div>
+
+  <form action="/admin/settings/general" method="POST">
+    <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0; gap: 1rem;">
+      <div style="display: flex; flex-direction: column; gap: 0.2rem;">
+        <label class="form-label" style="margin-bottom: 0px; cursor: pointer; font-weight: 700;" for="allowCustomQuestionCount">تحديد عدد أسئلة الاختبار</label>
+        <span style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4;">تمكين الطلاب من تحديد عدد الأسئلة التي يودون اختبار أنفسهم بها عند بدء أي اختبار.</span>
+      </div>
+      <label class="toggle-switch-label">
+        <input type="checkbox" name="allowCustomQuestionCount" id="allowCustomQuestionCount" <%= settings.allowCustomQuestionCount ? 'checked' : '' %>>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <button type="submit" class="btn btn-primary" style="margin-top: 1rem;" title="حفظ الإعدادات العامة للنظام"><i class="fa-solid fa-floppy-disk" style="margin-left: 0.4rem;"></i> حفظ الإعدادات</button>
+  </form>
 </div>
 
 <div class="section-card" style="max-width:520px">
-  <div class="section-card-header"><h3>🔐 تغيير كلمة المرور</h3></div>
-
-  <% if (error) { %>
-  <div class="alert alert-error" style="margin-bottom:1.25rem"><span>⚠️</span> <%= error %></div>
-  <% } %>
-  <% if (success) { %>
-  <div class="alert alert-success" style="margin-bottom:1.25rem"><span>✅</span> <%= success %></div>
-  <% } %>
+  <div class="section-card-header"><h3><i class="fa-solid fa-key" style="color: var(--accent); margin-left: 0.5rem;"></i> تغيير كلمة المرور</h3></div>
 
   <form action="/admin/settings/password" method="POST">
     <div class="form-group">
       <label class="form-label">كلمة المرور الحالية</label>
-      <input type="password" name="current" class="form-input" required placeholder="••••••••">
+      <input type="password" name="current" class="form-input" required placeholder="••••••••" title="أدخل كلمة المرور الحالية المستخدمة لتسجيل الدخول">
     </div>
     <div class="form-group">
       <label class="form-label">كلمة المرور الجديدة</label>
-      <input type="password" name="newPass" class="form-input" required placeholder="6 أحرف على الأقل" minlength="6">
+      <input type="password" name="newPass" class="form-input" required placeholder="6 أحرف على الأقل" minlength="6" title="أدخل كلمة المرور الجديدة (يجب أن لا تقل عن 6 خانات)">
     </div>
     <div class="form-group">
       <label class="form-label">تأكيد كلمة المرور</label>
-      <input type="password" name="confirm" class="form-input" required placeholder="أعد كتابة كلمة المرور">
+      <input type="password" name="confirm" class="form-input" required placeholder="أعد كتابة كلمة المرور" title="أعد إدخال كلمة المرور الجديدة للتأكد من مطابقتها">
     </div>
-    <button type="submit" class="btn btn-primary save-btn">💾 حفظ التغييرات</button>
+    <button type="submit" class="btn btn-primary save-btn" title="حفظ كلمة المرور الجديدة وتحديث بيانات النظام"><i class="fa-solid fa-floppy-disk" style="margin-left: 0.4rem;"></i> حفظ التغييرات</button>
   </form>
 </div>
 
 <div class="section-card" style="max-width:520px;margin-top:1.5rem">
-  <div class="section-card-header"><h3>ℹ️ معلومات النظام</h3></div>
+  <div class="section-card-header"><h3><i class="fa-solid fa-circle-info" style="color: var(--accent-3); margin-left: 0.5rem;"></i> معلومات النظام</h3></div>
   <div class="info-list">
     <div class="info-row">
       <span class="info-label">الإصدار</span>

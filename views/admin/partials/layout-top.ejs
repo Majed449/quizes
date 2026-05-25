@@ -6,16 +6,23 @@
   <title><%= title %> | لوحة التحكم</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/admin.css">
+  <script>
+    // Pre-load theme to prevent flash of unstyled content (FOUC)
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  </script>
 </head>
 <body class="admin-body">
+<div class="bg-grid"></div>
 
 <div class="admin-layout">
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <span class="sidebar-logo-icon">🎓</span>
+      <i class="fa-solid fa-graduation-cap sidebar-logo-icon-fa" style="font-size: 1.8rem; color: var(--accent);"></i>
       <div>
         <div class="sidebar-title">منصة التعلم</div>
         <div class="sidebar-sub">لوحة التحكم</div>
@@ -24,24 +31,24 @@
 
     <nav class="sidebar-nav">
       <div class="nav-section-label">القائمة الرئيسية</div>
-      <a href="/admin" class="sidebar-link <%= locals.activePage === 'dashboard' ? 'active' : '' %>">
-        <span class="sl-icon">📊</span> لوحة المعلومات
+      <a href="/admin" class="sidebar-link <%= locals.activePage === 'dashboard' ? 'active' : '' %>" title="الذهاب للوحة الإحصاءات العامة والإجراءات السريعة">
+        <span class="sl-icon"><i class="fa-solid fa-chart-pie"></i></span> لوحة المعلومات
       </a>
-      <a href="/admin/quizzes" class="sidebar-link <%= locals.activePage === 'quizzes' ? 'active' : '' %>">
-        <span class="sl-icon">🎯</span> الاختبارات
+      <a href="/admin/quizzes" class="sidebar-link <%= locals.activePage === 'quizzes' ? 'active' : '' %>" title="إدارة وإضافة وتعديل الاختبارات التعليمية التفاعلية">
+        <span class="sl-icon"><i class="fa-solid fa-bullseye"></i></span> الاختبارات
       </a>
-      <a href="/admin/reviews" class="sidebar-link <%= locals.activePage === 'reviews' ? 'active' : '' %>">
-        <span class="sl-icon">📚</span> المراجعات
+      <a href="/admin/reviews" class="sidebar-link <%= locals.activePage === 'reviews' ? 'active' : '' %>" title="إدارة وإضافة وتعديل مواد المراجعة والتلخيصات والأسئلة المقالية">
+        <span class="sl-icon"><i class="fa-solid fa-book-open"></i></span> المراجعات
       </a>
       <div class="nav-section-label" style="margin-top:1rem">الإعدادات</div>
-      <a href="/admin/settings" class="sidebar-link <%= locals.activePage === 'settings' ? 'active' : '' %>">
-        <span class="sl-icon">⚙️</span> الإعدادات
+      <a href="/admin/settings" class="sidebar-link <%= locals.activePage === 'settings' ? 'active' : '' %>" title="تغيير كلمة المرور وإعدادات لوحة التحكم">
+        <span class="sl-icon"><i class="fa-solid fa-sliders"></i></span> الإعدادات
       </a>
-      <a href="/" class="sidebar-link" target="_blank">
-        <span class="sl-icon">🌐</span> عرض الموقع
+      <a href="/" class="sidebar-link" target="_blank" title="مشاهدة وتصفح الواجهة الأمامية للطلاب في نافذة جديدة">
+        <span class="sl-icon"><i class="fa-solid fa-globe"></i></span> عرض الموقع
       </a>
-      <a href="/admin/logout" class="sidebar-link sidebar-logout">
-        <span class="sl-icon">🚪</span> تسجيل الخروج
+      <a href="/admin/logout" class="sidebar-link sidebar-logout" title="تسجيل الخروج الآمن من لوحة التحكم للمشرف">
+        <span class="sl-icon"><i class="fa-solid fa-door-open"></i></span> تسجيل الخروج
       </a>
     </nav>
   </aside>
@@ -49,10 +56,10 @@
   <!-- MAIN -->
   <div class="admin-main">
     <header class="admin-topbar">
-      <button class="topbar-toggle" onclick="toggleSidebar()">☰</button>
+      <button class="topbar-toggle" onclick="toggleSidebar()" title="فتح أو إغلاق القائمة الجانبية للتصفح"><i class="fa-solid fa-bars"></i></button>
       <div class="topbar-title"><%= title %></div>
-      <div class="topbar-user">
-        <span class="user-dot"></span>
+      <div class="topbar-user" title="المشرف الحالي المسجل دخوله للمنصة">
+        <i class="fa-solid fa-circle-user" style="font-size: 1.1rem; color: var(--accent);"></i>
         مسؤول النظام
       </div>
     </header>

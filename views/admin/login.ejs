@@ -6,22 +6,28 @@
   <title>تسجيل دخول الإدارة</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/admin.css">
   <link rel="icon" type="image/png" href="../images/icon.png">
+  <script>
+    // Pre-load theme to prevent flash of unstyled content (FOUC)
+    const savedTheme = localStorage.getItem('theme') || 'cosmic';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  </script>
 </head>
 <body class="login-body">
   <div class="login-wrap">
     <div class="login-card">
       <div class="login-logo">
-        <span class="login-logo-icon">🎓</span>
+        <i class="fa-solid fa-graduation-cap login-logo-icon-fa" style="font-size: 2.2rem; color: var(--accent); display: block; margin-bottom: 0.75rem;"></i>
         <h1>منصة التعلم</h1>
         <p>لوحة تحكم المسؤول</p>
       </div>
 
       <% if (error) { %>
-      <div class="alert alert-error">
-        <span>⚠️</span> <%= error %>
+      <div class="alert alert-error" style="display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+        <i class="fa-solid fa-triangle-exclamation"></i> <span><%= error %></span>
       </div>
       <% } %>
 
@@ -35,11 +41,11 @@
           <input type="password" name="password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
         </div>
         <button type="submit" class="btn btn-primary btn-full">
-          🔐 تسجيل الدخول
+          <i class="fa-solid fa-lock" style="margin-left: 0.4rem;"></i> تسجيل الدخول
         </button>
       </form>
 
-      <a href="/" class="login-back">← العودة للموقع</a>
+      <a href="/" class="login-back" style="display: inline-flex; align-items: center; gap: 0.4rem; justify-content: center;"><i class="fa-solid fa-arrow-right"></i> العودة للموقع</a>
     </div>
   </div>
 </body>

@@ -1,16 +1,26 @@
 <%- include('partials/layout-top', { activePage: 'reviews' }) %>
 
 <div class="page-actions-bar">
-  <h2 class="page-bar-title">📚 المراجعات (<%= reviews.length %>)</h2>
-  <a href="/admin/reviews/new" class="btn btn-primary">➕ إضافة مراجعة</a>
+  <div>
+    <h2 class="page-bar-title"><i class="fa-solid fa-book-open" style="color: var(--accent); margin-left: 0.5rem;"></i> المراجعات (<span id="reviewsCount"><%= reviews.length %></span>)</h2>
+    <% if (reviews.length > 0) { %>
+    <div class="search-filter-wrap" style="margin-top:0.75rem; position: relative; display: flex; align-items: center; gap: 0.75rem;">
+      <div style="position: relative; flex: 1; min-width: 250px;">
+        <i class="fa-solid fa-magnifying-glass" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: 0.88rem;"></i>
+        <input type="text" id="searchInput" class="form-input search-input-with-icon" placeholder="ابحث عن مراجعة..." style="padding-right: 2.25rem;" title="ابحث عن مراجعة بالعنوان أو الوصف أو اسم المادة">
+      </div>
+    </div>
+    <% } %>
+  </div>
+  <a href="/admin/reviews/new" class="btn btn-primary" title="إنشاء مادة مراجعة دراسية وتلخيصات جديدة"><i class="fa-solid fa-plus" style="margin-left: 0.4rem;"></i> إضافة مراجعة</a>
 </div>
 
 <% if (reviews.length === 0) { %>
 <div class="empty-state">
-  <div class="empty-icon">📚</div>
+  <div class="empty-icon"><i class="fa-solid fa-book-bookmark" style="color: var(--text-dim);"></i></div>
   <h3>لا توجد مراجعات بعد</h3>
   <p>ابدأ بإضافة مراجعتك الأولى</p>
-  <a href="/admin/reviews/new" class="btn btn-primary" style="margin-top:1rem">إضافة مراجعة</a>
+  <a href="/admin/reviews/new" class="btn btn-primary" style="margin-top:1rem"><i class="fa-solid fa-plus" style="margin-left: 0.4rem;"></i> إضافة مراجعة</a>
 </div>
 <% } else { %>
 <div class="data-table-wrap">
@@ -30,7 +40,7 @@
       <tr>
         <td>
           <div class="table-title-cell">
-            <span class="table-icon"><%= review.icon %></span>
+            <span class="table-icon"><i class="fa-solid fa-graduation-cap" style="color: <%= review.color || 'var(--accent)' %>;"></i></span>
             <div>
               <div class="table-name"><%= review.title %></div>
               <div class="table-sub"><%= review.description %></div>
@@ -42,10 +52,10 @@
         <td><span class="badge badge-yellow"><%= essayCount %></span></td>
         <td>
           <div class="action-btns">
-            <a href="/review/<%= review.id %>" target="_blank" class="action-btn action-view" title="عرض">👁️</a>
-            <a href="/admin/reviews/<%= review.id %>/edit" class="action-btn action-edit" title="تعديل">✏️</a>
-            <form action="/admin/reviews/<%= review.id %>/delete" method="POST" onsubmit="return confirmDelete('هل أنت متأكد من حذف هذه المراجعة؟')">
-              <button type="submit" class="action-btn action-delete" title="حذف">🗑️</button>
+            <a href="/review/<%= review.id %>" target="_blank" class="action-btn action-view" title="عرض"><i class="fa-solid fa-eye"></i></a>
+            <a href="/admin/reviews/<%= review.id %>/edit" class="action-btn action-edit" title="تعديل"><i class="fa-solid fa-pen-to-square"></i></a>
+            <form action="/admin/reviews/<%= review.id %>/delete" method="POST" onsubmit="return confirmDelete('هل أنت متأكد من حذف هذه المراجعة؟')" style="display:inline">
+              <button type="submit" class="action-btn action-delete" title="حذف"><i class="fa-solid fa-trash-can"></i></button>
             </form>
           </div>
         </td>
@@ -54,6 +64,36 @@
     </tbody>
   </table>
 </div>
+<% } %>
+
+<% if (reviews.length > 0) { %>
+<script>
+  const searchInput = document.getElementById('searchInput');
+  const tableRows = document.querySelectorAll('.data-table tbody tr');
+  const countSpan = document.getElementById('reviewsCount');
+
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.toLowerCase().trim();
+      let visibleCount = 0;
+
+      tableRows.forEach(row => {
+        const title = row.querySelector('.table-name').textContent.toLowerCase();
+        const desc = row.querySelector('.table-sub').textContent.toLowerCase();
+        const subject = row.querySelector('.badge-purple').textContent.toLowerCase();
+
+        if (title.includes(query) || desc.includes(query) || subject.includes(query)) {
+          row.style.display = '';
+          visibleCount++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      countSpan.textContent = visibleCount;
+    });
+  }
+</script>
 <% } %>
 
 <%- include('partials/layout-bottom') %>

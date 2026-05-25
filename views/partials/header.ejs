@@ -6,22 +6,71 @@
   <title><%= title %> | منصة التعلم</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/<%= typeof pageStyle !== 'undefined' ? pageStyle : 'index' %>.css">
   <link rel="icon" type="image/png" href="/images/icon.png">
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+  </script>
 </head>
 <body>
+  <!-- Global Page Transition Loader -->
+  <div id="global-loader-bar" class="global-loader-bar"></div>
+  <div id="global-page-overlay" class="global-page-overlay">
+    <div class="global-circular-loader">
+      <div class="loader-rings">
+        <div class="loader-ring loader-ring-outer"></div>
+        <div class="loader-ring loader-ring-inner"></div>
+        <div class="loader-ring-center">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+      </div>
+      <div class="loader-info">
+        <span class="loader-text">جاري التحميل</span>
+        <span class="loader-dots"><span></span><span></span><span></span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-grid"></div>
   <nav class="navbar">
     <div class="nav-container">
-      <a href="/" class="nav-logo">
-        <span class="logo-icon">🎓</span>
+      <a href="/" class="nav-logo" title="المنصة الرئيسية للتعلم">
+        <i class="fa-solid fa-graduation-cap logo-icon-fa" style="font-size: 1.5rem; color: var(--accent);"></i>
         <span class="logo-text">منصة التعلم</span>
       </a>
       <ul class="nav-links">
-        <li><a href="/" class="nav-link">الرئيسية</a></li>
-        <li><a href="/quiz" class="nav-link">الاختبارات</a></li>
-        <li><a href="/review" class="nav-link">المراجعة</a></li>
+        <li><a href="/" class="nav-link" title="الانتقال إلى الصفحة الرئيسية"><i class="fa-solid fa-house" style="margin-left: 0.4rem; font-size: 0.9rem;"></i>الرئيسية</a></li>
+        <li><a href="/quiz" class="nav-link" title="عرض جميع الاختبارات المتاحة"><i class="fa-solid fa-bullseye" style="margin-left: 0.4rem; font-size: 0.9rem;"></i>الاختبارات</a></li>
+        <li><a href="/review" class="nav-link" title="تصفح مواد المراجعة والأسئلة المقالية"><i class="fa-solid fa-book-open" style="margin-left: 0.4rem; font-size: 0.9rem;"></i>المراجعة</a></li>
+        <li><a href="/battle/join" class="nav-link" title="الانضمام لتحدي ثنائي مباشر مع زميلك"><i class="fa-solid fa-gamepad" style="margin-left: 0.4rem; font-size: 0.9rem;"></i>تحدي مباشر</a></li>
+        <li><a href="/chat" class="nav-link" title="التحدث مع المساعد الدراسي الذكي"><i class="fa-solid fa-robot" style="margin-left: 0.4rem; font-size: 0.9rem;"></i>المساعد الذكي</a></li>
       </ul>
-      <button class="nav-toggle" id="navToggle">☰</button>
+
+      <!-- Controls Container (Theme & Admin Link) -->
+      <div class="nav-controls">
+        <a href="/admin" class="theme-btn" title="لوحة التحكم وتسجيل دخول المعلمين">
+          <i class="fa-solid fa-user-shield"></i>
+        </a>
+
+        <!-- Theme Switcher Widget -->
+        <div class="theme-selector-wrap">
+          <button class="theme-btn" id="themeBtn" title="تغيير مظهر وألوان الموقع">
+            <i class="fa-solid fa-palette"></i>
+          </button>
+          <div class="theme-dropdown" id="themeDropdown">
+            <button class="theme-opt" data-theme="dark" title="التحويل إلى الوضع الداكن الافتراضي"><i class="fa-solid fa-moon" style="margin-left:0.4rem"></i> داكن</button>
+            <button class="theme-opt" data-theme="light" title="التحويل إلى الوضع المضيء الكلاسيكي" style="color:white"><i class="fa-solid fa-sun" style="margin-left:0.4rem; color:white;"></i> مضيء</button>
+            <button class="theme-opt" data-theme="purple" title="التحويل إلى مظهر البنفسجي الجذاب"><i class="fa-solid fa-wand-magic-sparkles" style="margin-left:0.4rem"></i> بنفسجي</button>
+            <button class="theme-opt" data-theme="comic" title="التحويل إلى مظهر الفضاء الكوني"><i class="fa-solid fa-user-astronaut" style="margin-left:0.4rem"></i> كوني</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="nav-toggle" id="navToggle"><i class="fa-solid fa-bars"></i></button>
     </div>
   </nav>

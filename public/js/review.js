@@ -37,10 +37,10 @@ const sectionObserver = new IntersectionObserver((entries) => {
     if (entry.isIntersecting) {
       const id = entry.target.id;
       tocLinks.forEach(link => {
-        link.style.color = link.getAttribute('href') === '#' + id ? '#00d4aa' : '';
+        link.style.color = link.getAttribute('href') === '#' + id ? 'var(--accent)' : '';
         if (link.getAttribute('href') === '#' + id) {
-          link.querySelector('.toc-num').style.background = '#00d4aa';
-          link.querySelector('.toc-num').style.color = '#0a0f1e';
+          link.querySelector('.toc-num').style.background = 'var(--accent)';
+          link.querySelector('.toc-num').style.color = 'var(--bg)';
         } else {
           link.querySelector('.toc-num').style.background = '';
           link.querySelector('.toc-num').style.color = '';
@@ -52,10 +52,30 @@ const sectionObserver = new IntersectionObserver((entries) => {
 
 sections.forEach(s => sectionObserver.observe(s));
 
-// ===== AUTO-RESIZE TEXTAREA =====
-document.querySelectorAll('.student-textarea').forEach(textarea => {
-  textarea.addEventListener('input', () => {
-    textarea.style.height = 'auto';
-    textarea.style.height = textarea.scrollHeight + 'px';
-  });
+// ===== AUTO-RESIZE TEXTAREA & SAVE TO LOCALSTORAGE =====
+const topicId = window.location.pathname.split('/').pop();
+
+document.querySelectorAll('.essay-question-card').forEach(card => {
+  const qId = card.id;
+  const textarea = card.querySelector('.student-textarea');
+  if (qId && textarea) {
+    const storageKey = `review_ans_${topicId}_${qId}`;
+    
+    // Load saved value
+    const saved = localStorage.getItem(storageKey);
+    if (saved) {
+      textarea.value = saved;
+      setTimeout(() => {
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+      }, 50);
+    }
+
+    // Save on input & resize
+    textarea.addEventListener('input', () => {
+      localStorage.setItem(storageKey, textarea.value);
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    });
+  }
 });
